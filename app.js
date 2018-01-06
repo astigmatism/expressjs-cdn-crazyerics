@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(express.static('public'));
+app.use(path.join(__dirname, 'public'));
 
 //CORS
 app.use(function (req, res, next) {
