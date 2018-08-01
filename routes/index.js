@@ -2,6 +2,7 @@ var fs = require('fs-extra');
 const path = require('path');
 var express = require('express');
 var Main = require('../main');
+var Titlescreen = require('../titlescreen');
 var router = express.Router();
 
 const contributionsPath = path.join(__dirname, '../','public','contributions');
@@ -56,6 +57,26 @@ router.post('/contribute', (req, res, next) => {
     } else {
         res.json();
     }
+});
+
+router.get('/titlescreen', (req, res, next) => {
+    
+    var gk = req.query.gk;
+
+    if (!gk) {
+        return res.json();
+    }
+
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+    Titlescreen.Get(gk, function(err, response) {
+        if (err) {
+            return res.json();
+        }
+        res.json(response);
+    })
 });
 
 module.exports = router;
