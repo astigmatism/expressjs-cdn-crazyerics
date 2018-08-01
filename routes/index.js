@@ -4,7 +4,7 @@ var express = require('express');
 var Main = require('../main');
 var router = express.Router();
 
-const contributionsPath = path.join('public/contributions');
+const contributionsPath = path.join(__dirname, '../','public','contributions');
 
 //expose this endpoint for crazyerics. allows uploading screenshot data
 router.post('/contribute', (req, res, next) => {
