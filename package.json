@@ -6,11 +6,16 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "atob": "^2.1.1",
     "body-parser": "~1.17.1",
+    "btoa": "^1.2.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "express": "~4.15.2",
+    "fs-extra": "^7.0.0",
     "morgan": "~1.8.1",
+    "pako": "^1.0.6",
+    "path": "^0.12.7",
     "pug": "~2.0.0-beta11",
     "serve-favicon": "~2.4.2"
   }
