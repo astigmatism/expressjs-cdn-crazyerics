@@ -25,11 +25,55 @@ module.exports = new (function() {
             if (err) {
                 //maybe doesn't exist, try user contributed
 
-                return callback();
+                titlescreenPath = path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
+                fs.readFile(titlescreenPath, (err, data) => {
+                    if (err) {
+
+                        //nope, nothing here either
+                        return callback();
+                    }
+
+                    var base64String = new Buffer(data).toString('base64');
+                    callback(null, base64String);
+                });
+                return;
             }
 
             var base64String = new Buffer(data).toString('base64');
             callback(null, base64String);
         });
+    };
+
+    this.Set = function(formdata, callback) {
+
+        var data = Main.Decompress.json(formdata);
+
+        //ensure decopressed data is present before continuing
+        if (data && data.contents && data.gameKey) {
+
+            var gameKey = data.gameKey;
+            var contents = data.contents;
+
+            var titlescreenPath = path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file);
+            var filename = '0.jpg';
+
+            //write file
+            fs.ensureDir(titlescreenPath, err => {
+                if (err) {
+                    return callback('error 1');
+                }
+
+                fs.writeFile(path.join(titlescreenPath, filename), contents, 'base64', (err) => {
+                    if (err) {
+                        return callback('error 2');
+                    }
+                    return callback(null, contents);
+                });
+            });
+
+        }
+        else {
+            return callback('error 0');
+        }
     };
 });
