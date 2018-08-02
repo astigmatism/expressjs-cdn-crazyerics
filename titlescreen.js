@@ -9,38 +9,35 @@ module.exports = new (function() {
 
     var _self = this;
 
-	this.Get = function(gk, callback) {
+	this.Get = function(gk, width, height, callback) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
 
         if (!gameKey) {
             //console.log('unable to parse gameKey from --> ' + gk);
-            return callback();
+            return callback(400, 'err 1');
         }
 
-        //first, look for proper title screen (which I would have uploaded)
-        var titlescreenPath = path.join(titlescreensPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
-        fs.readFile(titlescreenPath, (err, data) => {
+        var pathsToSearch = [
+            path.join(titlescreensPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg'), //my title screen location
+            path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg') //user contributed title screen location
+        ];
+
+        Main.OpenFileAlternates(pathsToSearch, function(err, data) {
             if (err) {
-                //maybe doesn't exist, try user contributed
-
-                titlescreenPath = path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
-                fs.readFile(titlescreenPath, (err, data) => {
-                    if (err) {
-
-                        //nope, nothing here either
-                        return callback();
-                    }
-
-                    var base64String = new Buffer(data).toString('base64');
-                    callback(null, base64String);
-                });
-                return;
+                return callback(404, 'err 2'); //no files found, 404
             }
 
-            var base64String = new Buffer(data).toString('base64');
-            callback(null, base64String);
+            //resize on the fly if needed
+            Main.ResizeImage(data, width, height, function(err, output) {
+                if (err) {
+                    return callback(500, err);
+                }
+
+                var base64String = new Buffer(output).toString('base64'); //convert data to base64
+                callback(null, null, base64String);
+            });
         });
     };
 
