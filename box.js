@@ -2,26 +2,25 @@ var fs = require('fs-extra');
 var Main = require('./main.js');
 const path = require('path');
 
-const titlescreensPath = path.join(__dirname, '/','media','titlescreens');
-const contributionsPath = path.join(__dirname, '/','contributions','titlescreens');
+const boxFrontPath = path.join(__dirname, '/','public','boxes', 'front');
 
 module.exports = new (function() {
 
     var _self = this;
 
-	this.Get = function(gk, width, height, callback) {
+	this.GetFront = function(gk, width, height, callback) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
 
         if (!gameKey) {
-            //console.log('unable to parse gameKey from --> ' + gk);
             return callback(400, 'err 1');
         }
 
         var pathsToSearch = [
-            path.join(titlescreensPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg'), //my title screen location
-            path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg') //user contributed title screen location
+            //first search for a resized previously by sharp and saved to the fs
+            //second, find the original box front (it will have to be resized)
+            //use the standard "no box art" image
         ];
 
         Main.OpenFileAlternates(pathsToSearch, function(err, data) {
