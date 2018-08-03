@@ -3,6 +3,7 @@ var pako = require('pako');
 var btoa = require('btoa');
 var atob = require('atob');
 const Sharp = require('sharp'); //http://sharp.dimens.io/en/stable/install/
+const path = require('path');
 
 module.exports = new (function() {
 
@@ -15,7 +16,7 @@ module.exports = new (function() {
      * @param {Number | null | undefined} height 
      * @param {*} callback 
      */
-    this.ResizeImage = function(image, width, height, callback) {
+    this.ResizeImage = function(processedPath, image, width, height, callback) {
 
         //bail when both are not defined
         if (!width && !height) {
@@ -24,11 +25,27 @@ module.exports = new (function() {
 
         Sharp(image)
             .resize(width, height)
-            .toBuffer(function(err, outputBuffer) {
+            .toBuffer((err, outputBuffer) => {
                 if (err) {
                     return callback(err);
                 }
-                return callback(null, outputBuffer);
+                
+                //ensure directory exists
+                fs.ensureDir(processedPath, (err) => {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    var processedFilePath = path.join(processedPath, '0.jpg');
+
+                    //write the output buffer to the file location
+                    fs.writeFile(processedFilePath, outputBuffer, (err) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        return callback(null, outputBuffer);
+                    });
+                });
         });
     };
 
@@ -46,7 +63,7 @@ module.exports = new (function() {
                 return callback('no files returned data');
             }
             //this file was successfully openned
-            return callback(null, data);
+            return callback(null, data, index);
         });
     }
 

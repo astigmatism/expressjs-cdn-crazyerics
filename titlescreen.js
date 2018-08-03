@@ -2,8 +2,9 @@ var fs = require('fs-extra');
 var Main = require('./main.js');
 const path = require('path');
 
-const titlescreensPath = path.join(__dirname, '/','media','titlescreens');
-const contributionsPath = path.join(__dirname, '/','contributions','titlescreens');
+const processedRoot = path.join(__dirname, '/','processed','titlescreens');
+const mediaRoot = path.join(__dirname, '/','media','titlescreens');
+const contributionsRoot = path.join(__dirname, '/','contributions','titlescreens');
 
 module.exports = new (function() {
 
@@ -19,25 +20,39 @@ module.exports = new (function() {
             return callback(400, 'err 1');
         }
 
-        var pathsToSearch = [
-            path.join(titlescreensPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg'), //my title screen location
-            path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file, '0.jpg') //user contributed title screen location
-        ];
+        //create a string for a unique filename (since these can be undef or null).
+        var widthAndHeight = (width) ? 'w' + width : '';
+        widthAndHeight += (height) ? 'h' + height : '';
 
-        Main.OpenFileAlternates(pathsToSearch, function(err, data) {
+        var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file, widthAndHeight);
+        var processedFilePath = path.join(processedPath, '0.jpg');
+        var mediaFilePath = path.join(mediaRoot, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
+        var contributionFilePath = path.join(contributionsRoot, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
+
+        var pathsToSearch = [processedFilePath, mediaFilePath, contributionFilePath];
+
+        Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
             if (err) {
                 return callback(404, 'err 2'); //no files found, 404
             }
 
-            //resize on the fly if needed
-            Main.ResizeImage(data, width, height, function(err, output) {
-                if (err) {
-                    return callback(500, err);
-                }
+            //create processed image by resizing on the fly
+            if (successIndex != 0) {
+                Main.ResizeImage(processedPath, data, width, height, function(err, output) {
+                    if (err) {
+                        return callback(500, err);
+                    }
 
-                var base64String = new Buffer(output).toString('base64'); //convert data to base64
+                    var base64String = new Buffer(output).toString('base64'); //convert data to base64
+                    callback(null, null, base64String);
+                });
+            }
+            //we got back our already resized image from the process folder
+            else {
+
+                var base64String = new Buffer(data).toString('base64'); //convert data to base64
                 callback(null, null, base64String);
-            });
+            }
         });
     };
 
@@ -51,7 +66,7 @@ module.exports = new (function() {
             var gameKey = data.gameKey;
             var contents = data.contents;
 
-            var titlescreenPath = path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file);
+            var titlescreenPath = path.join(contributionsRoot, gameKey.system, gameKey.title, gameKey.file);
             var filename = '0.jpg';
 
             //write file
