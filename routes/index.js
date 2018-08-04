@@ -20,6 +20,7 @@ const path = require('path');
 var express = require('express');
 var Main = require('../main');
 var Titlescreen = require('../titlescreen');
+var Box = require('../box');
 var router = express.Router();
 
 const contributionsPath = path.join(__dirname, '../','public','contributions');
@@ -90,11 +91,13 @@ router.get('/box/front/:gk', (req, res, next) => {
         height = parseInt(height, 10);
     }
 
-    Box.GetFront(gk, width, height, (status, err, response) => {
+    Box.GetFront(gk, width, height, (status, err, imageBinary) => {
         if (err) {
             return res.status(status).json(err);
         }
-        res.json(response);
+        
+        res.writeHead(200, {'Content-Type': 'image/jpeg' });
+        res.end(imageBinary, 'binary');
     });
 });
 

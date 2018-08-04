@@ -2,7 +2,8 @@
     "media": {
         "box": {
             "front": {
-                "snes": ["emumovies-w680", "googleImages22May2018"] //in that order
+                "nes": ["googleImages"],
+                "snes": ["emumovies-w680", "googleImages22May2018"]
             }
         }
     }
