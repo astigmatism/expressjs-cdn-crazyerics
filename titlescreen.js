@@ -2,9 +2,9 @@ var fs = require('fs-extra');
 var Main = require('./main.js');
 const path = require('path');
 
-const processedRoot = path.join(__dirname, '/','processed','titlescreens');
-const mediaRoot = path.join(__dirname, '/','media','titlescreens');
-const contributionsRoot = path.join(__dirname, '/','contributions','titlescreens');
+const processedRoot = path.join(__dirname, '/','processed','titlescreen');
+const mediaRoot = path.join(__dirname, '/','media','titlescreen');
+const contributionsRoot = path.join(__dirname, '/','contributions','titlescreen');
 
 module.exports = new (function() {
 

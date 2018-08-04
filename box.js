@@ -1,7 +1,8 @@
-var fs = require('fs-extra');
-var Main = require('./main.js');
+const fs = require('fs-extra');
+const Main = require('./main.js');
 const path = require('path');
 
+const processedRoot = path.join(__dirname, '/','processed','boxes', 'front');
 const boxFrontPath = path.join(__dirname, '/','public','boxes', 'front');
 
 module.exports = new (function() {
@@ -17,59 +18,51 @@ module.exports = new (function() {
             return callback(400, 'err 1');
         }
 
-        var pathsToSearch = [
-            //first search for a resized previously by sharp and saved to the fs
-            //second, find the original box front (it will have to be resized)
-            //use the standard "no box art" image
-        ];
+        //create a string for a unique filename (since these can be undef or null).
+        var widthAndHeight = (width) ? 'w' + width : '';
+        widthAndHeight += (height) ? 'h' + height : '';
 
-        Main.OpenFileAlternates(pathsToSearch, function(err, data) {
+        var pathsToSearch = [];
+
+        //first look through processed
+        var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file, widthAndHeight);
+
+        pathsToSearch.push(processedPath);
+
+        //next, look through all locations defined in config in media
+        if (config.media.boxes.front[gameKey.system]) {
+            var locations = config.media.boxes.front[gameKey.system];
+            for (var i = 0; i < locations.length; ++i) {
+                pathsToSearch.push(locations[i]);
+            }
+        }
+
+        //finally use the default, "no box art" image
+
+
+        Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
             if (err) {
                 return callback(404, 'err 2'); //no files found, 404
             }
 
-            //resize on the fly if needed
-            Main.ResizeImage(data, width, height, function(err, output) {
-                if (err) {
-                    return callback(500, err);
-                }
-
-                var base64String = new Buffer(output).toString('base64'); //convert data to base64
-                callback(null, null, base64String);
-            });
-        });
-    };
-
-    this.Set = function(formdata, callback) {
-
-        var data = Main.Decompress.json(formdata);
-
-        //ensure decopressed data is present before continuing
-        if (data && data.contents && data.gameKey) {
-
-            var gameKey = data.gameKey;
-            var contents = data.contents;
-
-            var titlescreenPath = path.join(contributionsPath, gameKey.system, gameKey.title, gameKey.file);
-            var filename = '0.jpg';
-
-            //write file
-            fs.ensureDir(titlescreenPath, err => {
-                if (err) {
-                    return callback('error 1');
-                }
-
-                fs.writeFile(path.join(titlescreenPath, filename), contents, 'base64', (err) => {
+            //create processed image by resizing on the fly
+            if (successIndex != 0) {
+                
+                Main.ResizeImage(processedPath, data, width, height, function(err, output) {
                     if (err) {
-                        return callback('error 2');
+                        return callback(500, err);
                     }
-                    return callback(null, contents);
-                });
-            });
 
-        }
-        else {
-            return callback('error 0');
-        }
+                    var base64String = new Buffer(output).toString('base64'); //convert data to base64
+                    callback(null, null, base64String);
+                });
+            }
+            //we got back our already resized image from the process folder
+            else {
+
+                var base64String = new Buffer(data).toString('base64'); //convert data to base64
+                callback(null, null, base64String);
+            }
+        });
     };
 });

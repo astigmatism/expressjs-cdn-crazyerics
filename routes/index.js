@@ -64,7 +64,7 @@ router.get('/titlescreen/:gk', (req, res, next) => {
 
     Titlescreen.Get(gk, width, height, (status, err, response) => {
         if (err) return res.status(status).json(err);
-        
+
         res.json(response);
     });
 });
