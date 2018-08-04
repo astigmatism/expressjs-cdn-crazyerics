@@ -2,6 +2,7 @@
     "media": {
         "box": {
             "front": {
+                "gb": ["googleImages"],
                 "nes": ["googleImages"],
                 "snes": ["emumovies-w680", "googleImages22May2018"]
             }

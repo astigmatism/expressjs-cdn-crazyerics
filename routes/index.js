@@ -9,6 +9,9 @@
  * Use correct response status codes:
  * 
  * 200 - success: In general this is the code to check on the client-end to ensure the expected response is returned
+ * 201 - success and resource created. I'll use this when the CDN generates content
+ * 203 - The server processed the request successfully, but is returning data from another source (or something)
+ * 204 - success, but no content (removes any content from the response body)
  * 
  * 400 - bad request
  * 403 - forbidden
@@ -63,10 +66,10 @@ router.get('/titlescreen/:gk', (req, res, next) => {
         height = parseInt(height, 10);
     }
 
-    Titlescreen.Get(gk, width, height, (status, err, response) => {
+    Titlescreen.Get(gk, width, height, (status, err, base64ImageData) => {
         if (err) return res.status(status).json(err);
 
-        res.json(response);
+        res.status(status).send(base64ImageData);
     });
 });
 
@@ -91,13 +94,12 @@ router.get('/box/front/:gk', (req, res, next) => {
         height = parseInt(height, 10);
     }
 
-    Box.GetFront(gk, width, height, (status, err, imageBinary) => {
+    Box.GetFront(gk, width, height, (status, err, base64ImageData) => {
         if (err) {
             return res.status(status).json(err);
         }
         
-        res.writeHead(200, {'Content-Type': 'image/jpeg' });
-        res.end(imageBinary, 'binary');
+        res.status(status).send(base64ImageData);
     });
 });
 

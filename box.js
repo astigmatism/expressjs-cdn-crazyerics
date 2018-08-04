@@ -39,31 +39,72 @@ module.exports = new (function() {
             }
         }
 
-        //finally use the default, "no box art" image
+        Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
+            if (err) {
 
+                //ok, so if we never get back a genuine image, we have to return the "no box art" image instead
+                GetEmptyCartridgeImage(gameKey, width, height, (status, err, base64Image) => {
+                    if (err) return callback(status, err);
+
+                    //if retrieved, always return with status of 203 "Non-Authoritative Information" to inform the client
+                    return callback(203, null, base64Image)
+                });
+            } 
+            else {
+
+                //create processed image by resizing on the fly
+                if (successIndex != 0) {
+                    
+                    Main.ResizeImage(processedPath, data, width, height, function(err, output) {
+                        if (err) {
+                            return callback(500, err);
+                        }
+
+                        callback(201, null, new Buffer(output).toString('base64')); // 201 resource created
+                    });
+                }
+                //we got back our already resized image from the process folder
+                else {
+                    
+                    callback(200, null, new Buffer(data).toString('base64')); //200 successfully retieved
+                }
+            }
+        });
+    };
+
+    var GetEmptyCartridgeImage = function(gameKey, width, height, callback) {
+        
+        //create a string for a unique filename (since these can be undef or null).
+        var widthAndHeight = (width) ? 'w' + width : '';
+        widthAndHeight += (height) ? 'h' + height : '';
+
+        var processedPath = path.join(processedRoot, gameKey.system, widthAndHeight);
+        
+        var pathsToSearch = [
+            path.join(processedPath, '0.jpg'), //the resized "no box"
+            path.join(boxFrontPath, gameKey.system, '0.png') //the original "no box", yes in png
+        ];
 
         Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
             if (err) {
-                return callback(404, 'err 2'); //no files found, 404
-            }
+                return callback(404, err); //ok, we really don't have this! lol
+            } 
 
             //create processed image by resizing on the fly
             if (successIndex != 0) {
-                
+                    
                 Main.ResizeImage(processedPath, data, width, height, function(err, output) {
                     if (err) {
                         return callback(500, err);
                     }
 
-                    //var base64String = new Buffer(output).toString('base64'); //convert data to base64
-                    callback(null, null, output);
+                    callback(203, null, new Buffer(output).toString('base64'));
                 });
             }
             //we got back our already resized image from the process folder
             else {
-
-                //var base64String = new Buffer(data).toString('base64'); //convert data to base64
-                callback(null, null, data);
+                
+                callback(203, null, new Buffer(data).toString('base64'));
             }
         });
     };

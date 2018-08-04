@@ -44,14 +44,14 @@ module.exports = new (function() {
                     }
 
                     var base64String = new Buffer(output).toString('base64'); //convert data to base64
-                    callback(null, null, base64String);
+                    callback(201, null, base64String);
                 });
             }
             //we got back our already resized image from the process folder
             else {
 
                 var base64String = new Buffer(data).toString('base64'); //convert data to base64
-                callback(null, null, base64String);
+                callback(200, null, base64String);
             }
         });
     };
