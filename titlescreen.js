@@ -71,21 +71,18 @@ module.exports = new (function() {
 
             //write file
             fs.ensureDir(titlescreenPath, err => {
-                if (err) {
-                    return callback('error 1');
-                }
+                if (err) return callback(500, 'err 1');
 
                 fs.writeFile(path.join(titlescreenPath, filename), contents, 'base64', (err) => {
-                    if (err) {
-                        return callback('error 2');
-                    }
-                    return callback(null, contents);
+                    if (err) return callback(500, 'err 2');
+
+                    return callback(null, null, contents);
                 });
             });
 
         }
         else {
-            return callback('error 0');
+            return callback(400, 'err 3');
         }
     };
 });
