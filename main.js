@@ -98,7 +98,7 @@ module.exports = new (function() {
             if (!width) width = Jimp.AUTO;
             if (!height) height = Jimp.AUTO;
 
-            Jimp.loadFont(path.join(mediaRoot, 'Poppins-Italic-48.fnt')).then((font) => {
+            Jimp.loadFont(path.join(mediaRoot, compositeConfig.font)).then((font) => {
 
                 output.print(
                     font,
