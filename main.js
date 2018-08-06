@@ -3,7 +3,10 @@ var pako = require('pako');
 var btoa = require('btoa');
 var atob = require('atob');
 const Sharp = require('sharp'); //http://sharp.dimens.io/en/stable/install/
+const Jimp = require('jimp'); //https://www.npmjs.com/package/jimp
 const path = require('path');
+
+const mediaRoot = path.join(__dirname, '/','media');
 
 module.exports = new (function() {
 
@@ -16,37 +19,109 @@ module.exports = new (function() {
      * @param {Number | null | undefined} height 
      * @param {*} callback 
      */
-    this.ResizeImage = function(processedPath, image, width, height, callback) {
+    this.ResizeImage = function(processedPath, image, width, height, callback, opt_text, opt_compositeConfig) {
 
         //bail when both are not defined
         if (!width && !height) {
-            return callback(image);
+            return callback(null, image);
         }
 
-        Sharp(image)
-            .resize(width, height)
-            .toBuffer((err, outputBuffer) => {
+        //determine resize library
+        if (opt_text) {
+
+            JimpResize(image, width, height, opt_text, opt_compositeConfig, (err, output) => {
+                if (err) return callback(err);
+
+                SaveProcessedImage(processedPath, output, (err, buffer) => {
+                    if (err) return callback(err);
+
+                    return callback(null, buffer);
+                });
+            });
+        }
+        else {
+
+            SharpResize(image, width, height, (err, output) => {
+
+                if (err) return callback(err);
+
+                SaveProcessedImage(processedPath, output, (err, buffer) => {
+                    if (err) return callback(err);
+
+                    return callback(null, buffer);
+                });
+            });
+        }
+    };
+
+    var SaveProcessedImage = function(processedPath, imageBuffer, callback) {
+
+        //to avoid saving for debugging
+        //return callback(null, imageBuffer);
+
+        //ensure directory exists
+        fs.ensureDir(processedPath, (err) => {
+            if (err) {
+                return callback(err);
+            }
+
+            var processedFilePath = path.join(processedPath, '0.jpg');
+
+            //write the output buffer to the file location
+            fs.writeFile(processedFilePath, imageBuffer, (err) => {
                 if (err) {
                     return callback(err);
                 }
-                
-                //ensure directory exists
-                fs.ensureDir(processedPath, (err) => {
-                    if (err) {
-                        return callback(err);
-                    }
-
-                    var processedFilePath = path.join(processedPath, '0.jpg');
-
-                    //write the output buffer to the file location
-                    fs.writeFile(processedFilePath, outputBuffer, (err) => {
-                        if (err) {
-                            return callback(err);
-                        }
-                        return callback(null, outputBuffer);
-                    });
-                });
+                return callback(null, imageBuffer);
+            });
         });
+    };
+
+    var SharpResize = function(image, width, height, callback) {
+
+        Sharp(image)
+            .resize(width, height, {
+                kernel: Sharp.kernel.lanczos3
+            })
+            .toBuffer((err, buffer) => {
+                if (err) return callback(err);
+
+                callback(null, buffer)
+            });
+    };
+
+    var JimpResize = function(image, width, height, text, compositeConfig, callback) {
+
+        Jimp.read(image, (err, output) => {
+            if (err) return callback(err);
+            
+            if (!width) width = Jimp.AUTO;
+            if (!height) height = Jimp.AUTO;
+
+            Jimp.loadFont(path.join(mediaRoot, 'Poppins-Italic-48.fnt')).then((font) => {
+
+                output.print(
+                    font,
+                    compositeConfig.x, //x start
+                    compositeConfig.y, //y srart
+                    {
+                        text: text,
+                        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+                        alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+                    },
+                    compositeConfig.width, //width
+                    compositeConfig.height //height
+                );
+    
+                output.resize(width, height, Jimp.RESIZE_BEZIER); //resize after composite
+
+                output.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
+                    if (err) return callback(err);
+    
+                    return callback(null, buffer);
+                });
+            });
+        }); 
     };
 
     this.OpenFileAlternates = function(paths, callback, _currentIndex) {

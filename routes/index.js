@@ -26,8 +26,6 @@ var Titlescreen = require('../titlescreen');
 var Box = require('../box');
 var router = express.Router();
 
-const contributionsPath = path.join(__dirname, '../','public','contributions');
-
 router.post('/contribute/titlescreen', (req, res, next) => {
     
     var formdata = req.body.cxhr; //this name means nothing, but it MUST be sent by the client of course
@@ -78,12 +76,13 @@ router.get('/box/front/:gk', (req, res, next) => {
     var gk = req.params.gk;
     var width = req.query.w;
     var height = req.query.h;
+    var base64 = req.query.b;
 
     SetCORS(res);
 
     //gk required
     if (!gk) {
-        return res.status(400).json('err 0'); //400 Bad Request
+        return res.status(400).end('err 0'); //400 Bad Request
     }
 
     //convert optional params
@@ -94,13 +93,32 @@ router.get('/box/front/:gk', (req, res, next) => {
         height = parseInt(height, 10);
     }
 
-    Box.GetFront(gk, width, height, (status, err, base64ImageData) => {
+    Box.GetFront(gk, width, height, (status, err, imageBuffer) => {
         if (err) {
             return res.status(status).json(err);
         }
+
+        if (base64) {
+            res.status(status).send(new Buffer(imageBuffer).toString('base64'));
+            return;
+        }
         
-        res.status(status).send(base64ImageData);
+        res.status(status).end(imageBuffer, 'buffer');
     });
+});
+
+router.get('/svg/:text', function(req, res) {
+
+    var word = req.params.text;
+
+    SetCORS(res);
+
+    Box.CreateTextSVG(word, (err, svgBuffer) => {
+        if (err) return res.status(500).json(err);
+
+        res.end(svgBuffer, 'buffer');
+    });
+
 });
 
 var SetCORS = function(res, method) {

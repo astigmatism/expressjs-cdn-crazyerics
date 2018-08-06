@@ -43,11 +43,11 @@ module.exports = new (function() {
             if (err) {
 
                 //ok, so if we never get back a genuine image, we have to return the "no box art" image instead
-                GetEmptyCartridgeImage(gameKey, width, height, (status, err, base64Image) => {
+                GetEmptyCartridgeImage(gameKey, width, height, (status, err, imageBuffer) => {
                     if (err) return callback(status, err);
 
                     //if retrieved, always return with status of 203 "Non-Authoritative Information" to inform the client
-                    return callback(203, null, base64Image)
+                    return callback(203, null, imageBuffer)
                 });
             } 
             else {
@@ -60,13 +60,13 @@ module.exports = new (function() {
                             return callback(500, err);
                         }
 
-                        callback(201, null, new Buffer(output).toString('base64')); // 201 resource created
+                        callback(201, null, output); // 201 resource created
                     });
                 }
                 //we got back our already resized image from the process folder
                 else {
                     
-                    callback(200, null, new Buffer(data).toString('base64')); //200 successfully retieved
+                    callback(200, null, data); //200 successfully retieved
                 }
             }
         });
@@ -78,7 +78,7 @@ module.exports = new (function() {
         var widthAndHeight = (width) ? 'w' + width : '';
         widthAndHeight += (height) ? 'h' + height : '';
 
-        var processedPath = path.join(processedRoot, gameKey.system, widthAndHeight);
+        var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, widthAndHeight);
         
         var pathsToSearch = [
             path.join(processedPath, '0.jpg'), //the resized "no box"
@@ -92,19 +92,28 @@ module.exports = new (function() {
 
             //create processed image by resizing on the fly
             if (successIndex != 0) {
-                    
+
+                //compositing will be required
+                var compositingConfig = config.compositing[gameKey.system];
+                if (!compositingConfig) {
+                    return callback(500, 'no composite config found for system: ' + gameKey.system);
+                }
+
                 Main.ResizeImage(processedPath, data, width, height, function(err, output) {
                     if (err) {
                         return callback(500, err);
                     }
 
-                    callback(203, null, new Buffer(output).toString('base64'));
-                });
+                    //callback(203, null, new Buffer(output).toString('base64'));
+                    callback(203, null, output);
+
+                }, gameKey.title, compositingConfig);
+
             }
             //we got back our already resized image from the process folder
             else {
                 
-                callback(203, null, new Buffer(data).toString('base64'));
+                callback(203, null, data);
             }
         });
     };

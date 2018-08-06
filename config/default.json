@@ -7,5 +7,25 @@
                 "snes": ["emumovies-w680", "googleImages22May2018"]
             }
         }
+    },
+    "compositing": {
+        "gb": {
+            "x": 105,
+            "y": 0,
+            "width": 371,
+            "height": 494
+        },
+        "nes": {
+            "x": 10,
+            "y": 40,
+            "width": 480,
+            "height": 645
+        },
+        "snes": {
+            "x": 10,
+            "y": 14,
+            "width": 400,
+            "height": 279
+        }
     }
 }
