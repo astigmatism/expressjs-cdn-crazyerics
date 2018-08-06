@@ -2,16 +2,25 @@
     "media": {
         "box": {
             "front": {
+                "gba": ["googleImages"],
                 "gb": ["googleImages"],
                 "gen": ["googleImages"],
                 "gg": ["googleImages"],
                 "nes": ["googleImages"],
                 "snes": ["emumovies-w680", "googleImages22May2018"],
-                "sms": ["googleImages"]
+                "sms": ["googleImages"],
+                "vb": ["googleImages"]
             }
         }
     },
     "compositing": {
+        "gba": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 130,
+            "y": 10,
+            "width": 371,
+            "height": 494
+        },
         "gb": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 105,
@@ -53,6 +62,13 @@
             "y": 126,
             "width": 405,
             "height": 526
+        },
+        "vb": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 10,
+            "y": 39,
+            "width": 480,
+            "height": 351
         }
     }
 }
