@@ -2,9 +2,11 @@ const fs = require('fs-extra');
 const Main = require('./main.js');
 const path = require('path');
 const config = require('config');
+const async = require('async');
 
 const processedRoot = path.join(__dirname, '/','processed','box', 'front');
-const boxFrontPath = path.join(__dirname, '/','media','box', 'front');
+const boxPath = path.join(__dirname, '/','media','box');
+const boxFrontPath = path.join(boxPath, 'front');
 
 module.exports = new (function() {
 
@@ -116,5 +118,45 @@ module.exports = new (function() {
                 callback(203, null, data);
             }
         });
+    };
+
+    this.Audit = function(subfolder, system, callback) {
+
+        var rootPath = path.join(boxPath, subfolder, system);
+        var locations = [];
+        var audit = {};
+
+        if (config.media.box[subfolder][system]) {
+            locations = config.media.box.front[system];
+        }
+
+        //open each location and build a manifest of found boxart
+        async.eachSeries(locations, (location, nextLocation) => {
+            
+            var source = path.join(rootPath, location);
+
+            //read all the title dirs
+            fs.readdir(source, function(err, titles) {
+                if (err) return nextLocation(err);
+
+                var i = 0, len = titles.length;
+                for (i; i < len; ++i) {
+                    var title = titles[i];
+                    if (!audit.hasOwnProperty(title)) {
+                        audit[title] = {
+                            source: location
+                        }
+                    }
+                }
+
+                return nextLocation();
+            });
+
+        }, (err) => {
+            if (err) return callback(500, err);
+
+            return callback(null, null, audit);
+        });
+
     };
 });

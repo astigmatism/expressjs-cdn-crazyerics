@@ -3,6 +3,7 @@
         "box": {
             "front": {
                 "gba": ["googleImages"],
+                "gbc": ["emuMovies08062018"],
                 "gb": ["googleImages"],
                 "gen": ["googleImages"],
                 "gg": ["googleImages"],

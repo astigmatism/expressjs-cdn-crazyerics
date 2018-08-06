@@ -107,18 +107,19 @@ router.get('/box/front/:gk', (req, res, next) => {
     });
 });
 
-router.get('/svg/:text', function(req, res) {
+router.get('/audit/media/box/front/:system', function(req, res) {
 
-    var word = req.params.text;
+    var system = req.params.system;
 
-    SetCORS(res);
+    if (!system) {
+        return res.status(400).end('err 0'); //400 Bad Request
+    }
 
-    Box.CreateTextSVG(word, (err, svgBuffer) => {
-        if (err) return res.status(500).json(err);
+    Box.Audit('front', system, (status, err, auditResult) => {
+        if (err) return res.status(status).json(err);
 
-        res.end(svgBuffer, 'buffer');
+        return res.status(200).json(auditResult);
     });
-
 });
 
 var SetCORS = function(res, method) {
