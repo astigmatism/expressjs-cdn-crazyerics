@@ -138,22 +138,9 @@ module.exports = new (function() {
             //open each location and build a manifest of found boxart
             async.eachSeries(locations, (location, nextLocation) => {
 
-                //read all the title dirs
-                fs.readdir(location, function(err, listing) {
-                    if (err) return nextLocation(); //on the error of openning a folder defined in the config, just move on
-
-                    var titles = [];
-
-                    //folders to array
-                    listing.map(file => {
-                        return path.join(location, file);
-                    }).filter(file => {
-                        return fs.statSync(file).isDirectory();
-                    }).filter(file => {
-                        return !(/(^|\/)\.[^\/\.]/g).test(file) //remove hidden folders
-                    }).forEach(function (folder) {
-                        titles.push(folder);
-                    });
+                //get another directory listing
+                Main.GetSortedDirectories(path.join(rootPath, location), (err, titles) => {
+                    if (err) return nextLocation(err);
 
                     var i = 0, len = titles.length;
                     for (i; i < len; ++i) {
@@ -161,7 +148,9 @@ module.exports = new (function() {
                         if (!audit.hasOwnProperty(title)) {
                             
                             //i have nothing to put in this object at the moment but perhaps ces could use something someday
-                            audit[title] = {};
+                            audit[title] = {
+                                source: location
+                            };
                         }
                     }
 

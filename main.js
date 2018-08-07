@@ -132,13 +132,13 @@ module.exports = new (function() {
 
             //folders to array
             listing.map(file => {
-                return path.join(rootPath, file);
+                return file;
             }).filter(file => {
-                return fs.statSync(file).isDirectory();
+                return fs.statSync(path.join(rootPath, file)).isDirectory();
             }).filter(file => {
-                return !(/(^|\/)\.[^\/\.]/g).test(file) //remove hidden folders
-            }).forEach(function (folder) {
-                locations.push(folder);
+                return !(/(^|\/)\.[^\/\.]/g).test(path.join(rootPath, file)) //remove hidden folders
+            }).forEach(file => {
+                locations.push(file);
             });
 
             //now sort the array based on name
