@@ -26,24 +26,16 @@ module.exports = new (function() {
             return callback(null, image);
         }
 
-        //determine resize library
-        if (opt_text) {
+        //helper function will compose text if needed, otherwise returns the same image buffer
+        ComposeTextOnImage(image, opt_text, opt_compositeConfig, (err, output) => {
+            if (err) return callback(err);
 
-            JimpResize(image, width, height, opt_text, opt_compositeConfig, (err, output) => {
-                if (err) return callback(err);
-
-                SaveProcessedImage(processedPath, output, (err, buffer) => {
-                    if (err) return callback(err);
-
-                    return callback(null, buffer);
-                });
-            });
-        }
-        else {
-
-            SharpResize(image, width, height, (err, output) => {
-
-                if (err) return callback(err);
+            //resize with sharp library
+            SharpResize(output, width, height, (err, output) => {
+                if (err) {
+                    return callback(err);
+                    //if you're thinking to attempt Jimp on Sharp's failure, I tried this and Jimp always failed too
+                }
 
                 SaveProcessedImage(processedPath, output, (err, buffer) => {
                     if (err) return callback(err);
@@ -51,7 +43,7 @@ module.exports = new (function() {
                     return callback(null, buffer);
                 });
             });
-        }
+        });
     };
 
     var SaveProcessedImage = function(processedPath, imageBuffer, callback) {
@@ -90,13 +82,15 @@ module.exports = new (function() {
             });
     };
 
-    var JimpResize = function(image, width, height, text, compositeConfig, callback) {
+    var ComposeTextOnImage = function(image, text, compositeConfig, callback) {
+
+        //bail if nothing to compose
+        if (!text || !compositeConfig) {
+            return callback(null, image);
+        }
 
         Jimp.read(image, (err, output) => {
             if (err) return callback(err);
-            
-            if (!width) width = Jimp.AUTO;
-            if (!height) height = Jimp.AUTO;
 
             Jimp.loadFont(path.join(mediaRoot, compositeConfig.font)).then((font) => {
 
@@ -112,8 +106,6 @@ module.exports = new (function() {
                     compositeConfig.width, //width
                     compositeConfig.height //height
                 );
-    
-                output.resize(width, height, Jimp.RESIZE_BEZIER); //resize after composite
 
                 output.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
                     if (err) return callback(err);
@@ -122,6 +114,26 @@ module.exports = new (function() {
                 });
             });
         }); 
+    };
+
+    var JimpResize = function(image, width, height, callback) {
+
+        Jimp.read(image, (err, output) => {
+            if (err) return callback(err);
+            
+            if (!width) width = Jimp.AUTO;
+            if (!height) height = Jimp.AUTO;
+
+            output.resize(width, height, Jimp.RESIZE_BEZIER); //resize after composite
+
+            output.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
+                if (err) return callback(err);
+
+                return callback(null, buffer);
+            });
+        }).catch(err => {
+            return callback(err);
+        });
     };
 
     this.GetSortedDirectories = function(rootPath, callback) {
