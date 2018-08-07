@@ -137,7 +137,7 @@ module.exports = new (function() {
 
             //read all the title dirs
             fs.readdir(source, function(err, titles) {
-                if (err) return nextLocation(err);
+                if (err) return nextLocation(); //on the error of openning a folder defined in the config, just move on
 
                 var i = 0, len = titles.length;
                 for (i; i < len; ++i) {
