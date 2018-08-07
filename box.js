@@ -43,7 +43,7 @@ module.exports = new (function() {
                     
                     var i = 0, len = listing.length;
                     for (i; i < len;++i) {
-                        pathsToSearch.push(path.join(listing[i], gameKey.title, '0.jpg'));
+                        pathsToSearch.push(path.join(boxFrontPath, gameKey.system, listing[i], gameKey.title, '0.jpg'));
                     }
 
                     Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
