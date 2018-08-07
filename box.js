@@ -139,8 +139,21 @@ module.exports = new (function() {
             async.eachSeries(locations, (location, nextLocation) => {
 
                 //read all the title dirs
-                fs.readdir(location, function(err, titles) {
+                fs.readdir(location, function(err, listing) {
                     if (err) return nextLocation(); //on the error of openning a folder defined in the config, just move on
+
+                    var titles = [];
+
+                    //folders to array
+                    listing.map(file => {
+                        return path.join(location, file);
+                    }).filter(file => {
+                        return fs.statSync(file).isDirectory();
+                    }).filter(file => {
+                        return !(/(^|\/)\.[^\/\.]/g).test(file) //remove hidden folders
+                    }).forEach(function (folder) {
+                        titles.push(folder);
+                    });
 
                     var i = 0, len = titles.length;
                     for (i; i < len; ++i) {
