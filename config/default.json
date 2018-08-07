@@ -1,19 +1,4 @@
 {
-    "media": {
-        "box": {
-            "front": {
-                "gba": ["googleImages"],
-                "gbc": ["emuMovies08062018"],
-                "gb": ["googleImages"],
-                "gen": ["googleImages"],
-                "gg": ["googleImages"],
-                "nes": ["googleImages"],
-                "snes": ["Super Nintendo (2D Boxes-HQ)(No-Intro_HyperBase)(EM 20151004)", "googleImages22May2018"],
-                "sms": ["googleImages"],
-                "vb": ["googleImages"]
-            }
-        }
-    },
     "compositing": {
         "gba": {
             "font": "Poppins-Italic-48-Mercury.fnt",

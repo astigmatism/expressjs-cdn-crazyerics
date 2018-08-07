@@ -124,6 +124,32 @@ module.exports = new (function() {
         }); 
     };
 
+    this.GetSortedDirectories = function(rootPath, callback) {
+        fs.readdir(rootPath, (err, listing) => {
+            if (err) return callback(err);
+            
+            var locations = [];
+
+            //folders to array
+            listing.map(file => {
+                return path.join(rootPath, file);
+            }).filter(file => {
+                return fs.statSync(file).isDirectory();
+            }).forEach(function (folder) {
+                locations.push(folder);
+            });
+
+            //now sort the array based on name
+            locations.sort(function(a, b){
+                if(a > b) return 1;
+                if(a < b) return -1;
+                return 0;
+            });
+
+            return callback(null, locations);
+        });
+    }
+
     this.OpenFileAlternates = function(paths, callback, _currentIndex) {
 
         var index = _currentIndex || 0;

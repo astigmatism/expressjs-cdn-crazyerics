@@ -25,51 +25,56 @@ module.exports = new (function() {
         var widthAndHeight = (width) ? 'w' + width : '';
         widthAndHeight += (height) ? 'h' + height : '';
 
-        var pathsToSearch = [];
-
-        //first look through processed
         var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, widthAndHeight);
         var processedFilePath = path.join(processedPath, '0.jpg');
+        var pathsToSearch = []; //used to build a list of locations to find the image media
 
-        pathsToSearch.push(processedFilePath);
-
-        //next, look through all locations defined in config in media
-        if (config.media.box.front[gameKey.system]) {
-            var locations = config.media.box.front[gameKey.system];
-            for (var i = 0; i < locations.length; ++i) {
-                pathsToSearch.push(path.join(boxFrontPath, gameKey.system, locations[i], gameKey.title, '0.jpg'));
-            }
-        }
-
-        Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
+        //to save the most time, first look directly for a pre-processed image
+        
+        
+        fs.readFile(processedFilePath, (err, processedImageBuffer) => {
             if (err) {
+                //err here would indicate an issue getting the processed image, no problem, time to make one
 
-                //ok, so if we never get back a genuine image, we have to return the "no box art" image instead
-                GetEmptyCartridgeImage(gameKey, width, height, (status, err, imageBuffer) => {
-                    if (err) return callback(status, err);
-
-                    //if retrieved, always return with status of 203 "Non-Authoritative Information" to inform the client
-                    return callback(203, null, imageBuffer)
-                });
-            } 
-            else {
-
-                //create processed image by resizing on the fly
-                if (successIndex != 0) {
+                //next, get a directory listing of the media folder to look through
+                //NOTE: remember that the names of the folders indictae priority
+                Main.GetSortedDirectories(path.join(boxFrontPath, gameKey.system), (err, listing) => {
+                    if (err) return callback(500, 'err 2');
                     
-                    Main.ResizeImage(processedPath, data, width, height, function(err, output) {
+                    var i = 0, len = listing.length;
+                    for (i; i < len;++i) {
+                        pathsToSearch.push(path.join(listing[i], gameKey.title, '0.jpg'));
+                    }
+
+                    Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
                         if (err) {
-                            return callback(500, err);
-                        }
+                            
+                            //an err here STILL means we couldn't find art
 
-                        callback(201, null, output); // 201 resource created
+                            //ok, so if we never get back a genuine image, we have to return the "no box art" image instead
+                            GetEmptyCartridgeImage(gameKey, width, height, (status, err, imageBuffer) => {
+                                if (err) return callback(status, err);
+            
+                                //if retrieved, always return with status of 203 "Non-Authoritative Information" 
+                                //to inform the client the art returned is the "no art found" solution
+                                return callback(203, null, imageBuffer)
+                            });
+                        }
+                        else {
+
+                            Main.ResizeImage(processedPath, data, width, height, function(err, output) {
+                                if (err) return callback(500, err);
+                                
+                                // 201 "Created" informs the client a processed image was created
+                                callback(201, null, output);    
+                            });
+                        }
                     });
-                }
-                //we got back our already resized image from the process folder
-                else {
-                    
-                    callback(200, null, data); //200 successfully retieved
-                }
+                });
+            }
+            //we got back a processed image right away
+            else {
+                callback(200, null, processedImageBuffer); //200 successfully retieved processed image
             }
         });
     };
@@ -126,37 +131,35 @@ module.exports = new (function() {
         var locations = [];
         var audit = {};
 
-        if (config.media.box[subfolder][system]) {
-            locations = config.media.box.front[system];
-        }
-
-        //open each location and build a manifest of found boxart
-        async.eachSeries(locations, (location, nextLocation) => {
-            
-            var source = path.join(rootPath, location);
-
-            //read all the title dirs
-            fs.readdir(source, function(err, titles) {
-                if (err) return nextLocation(); //on the error of openning a folder defined in the config, just move on
-
-                var i = 0, len = titles.length;
-                for (i; i < len; ++i) {
-                    var title = titles[i];
-                    if (!audit.hasOwnProperty(title)) {
-                        audit[title] = {
-                            source: location
-                        }
-                    }
-                }
-
-                return nextLocation();
-            });
-
-        }, (err) => {
+        //get directory listing, each folder is a source of box front art
+        Main.GetSortedDirectories(rootPath, (err, locations) => {
             if (err) return callback(500, err);
 
-            return callback(null, null, audit);
-        });
+            //open each location and build a manifest of found boxart
+            async.eachSeries(locations, (location, nextLocation) => {
 
+                //read all the title dirs
+                fs.readdir(location, function(err, titles) {
+                    if (err) return nextLocation(); //on the error of openning a folder defined in the config, just move on
+
+                    var i = 0, len = titles.length;
+                    for (i; i < len; ++i) {
+                        var title = titles[i];
+                        if (!audit.hasOwnProperty(title)) {
+                            
+                            //i have nothing to put in this object at the moment but perhaps ces could use something someday
+                            audit[title] = {};
+                        }
+                    }
+
+                    return nextLocation();
+                });
+
+            }, (err) => {
+                if (err) return callback(500, err);
+
+                return callback(null, null, audit);
+            });
+        });
     };
 });
