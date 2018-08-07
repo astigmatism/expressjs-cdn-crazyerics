@@ -135,6 +135,8 @@ module.exports = new (function() {
                 return path.join(rootPath, file);
             }).filter(file => {
                 return fs.statSync(file).isDirectory();
+            }).filter(file => {
+                return !(/(^|\/)\.[^\/\.]/g).test(file) //remove hidden folders
             }).forEach(function (folder) {
                 locations.push(folder);
             });
