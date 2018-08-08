@@ -150,7 +150,7 @@ module.exports = new (function() {
                             //i have nothing to put in this object at the moment but perhaps ces could use something someday
                             audit[title] = {
                                 source: location,
-                                rank: index + 1
+                                rank: index
                             };
                         }
                     }
