@@ -136,7 +136,7 @@ module.exports = new (function() {
             if (err) return callback(500, err);
 
             //open each location and build a manifest of found boxart
-            async.eachSeries(locations, (location, nextLocation) => {
+            async.forEachOf(locations, (location, index, nextLocation) => {
 
                 //get another directory listing
                 Main.GetSortedDirectories(path.join(rootPath, location), (err, titles) => {
@@ -149,7 +149,8 @@ module.exports = new (function() {
                             
                             //i have nothing to put in this object at the moment but perhaps ces could use something someday
                             audit[title] = {
-                                source: location
+                                source: location,
+                                rank: index + 1
                             };
                         }
                     }
