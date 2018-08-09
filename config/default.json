@@ -28,6 +28,13 @@
             "width": 385,
             "height": 672
         },
+        "jag": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 10,
+            "y": 10,
+            "width": 480,
+            "height": 480
+        },
         "lynx": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 35,
