@@ -42,6 +42,13 @@
             "width": 439,
             "height": 501
         },
+        "n64": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 10,
+            "y": 10,
+            "width": 387,
+            "height": 329
+        },
         "nes": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 10,
