@@ -1,5 +1,12 @@
 {
     "compositing": {
+        "a2600": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 53,
+            "y": 208,
+            "width": 389,
+            "height": 434
+        },
         "gba": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 130,
