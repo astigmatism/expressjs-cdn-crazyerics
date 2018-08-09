@@ -1,5 +1,12 @@
 {
     "compositing": {
+        "32x": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 110,
+            "y": 10,
+            "width": 380,
+            "height": 677
+        },
         "a2600": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 53,
