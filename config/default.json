@@ -111,6 +111,13 @@
             "y": 39,
             "width": 480,
             "height": 351
+        },
+        "vect": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 10,
+            "y": 134,
+            "width": 480,
+            "height": 459
         }
     }
 }
