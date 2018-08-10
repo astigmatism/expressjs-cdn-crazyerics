@@ -70,7 +70,8 @@ module.exports = new (function() {
             var filename = '0.jpg';
 
             //remove existing processed folder (all w and h mods inside)
-            fs.unlink(path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file), (err) => {
+            //so that new can be generated from this contribution
+            fs.emptyDir(path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file), (err) => {
                 if (err) return callback(500, 'err 0');
 
                 //write file
