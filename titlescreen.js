@@ -69,17 +69,21 @@ module.exports = new (function() {
             var titlescreenPath = path.join(contributionsRoot, gameKey.system, gameKey.title, gameKey.file);
             var filename = '0.jpg';
 
-            //write file
-            fs.ensureDir(titlescreenPath, err => {
-                if (err) return callback(500, 'err 1');
+            //remove existing processed folder (all w and h mods inside)
+            fs.unlink(path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file), (err) => {
+                if (err) return callback(500, 'err 0');
 
-                fs.writeFile(path.join(titlescreenPath, filename), contents, 'base64', (err) => {
-                    if (err) return callback(500, 'err 2');
+                //write file
+                fs.ensureDir(titlescreenPath, err => {
+                    if (err) return callback(500, 'err 1');
 
-                    return callback(null, null, contents);
+                    fs.writeFile(path.join(titlescreenPath, filename), contents, 'base64', (err) => {
+                        if (err) return callback(500, 'err 2');
+
+                        return callback(null, null, contents);
+                    });
                 });
             });
-
         }
         else {
             return callback(400, 'err 3');
