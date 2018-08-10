@@ -30,14 +30,12 @@ module.exports = new (function() {
         var pathsToSearch = []; //used to build a list of locations to find the image media
 
         //to save the most time, first look directly for a pre-processed image
-        
-        
         fs.readFile(processedFilePath, (err, processedImageBuffer) => {
             if (err) {
                 //err here would indicate an issue getting the processed image, no problem, time to make one
 
                 //next, get a directory listing of the media folder to look through
-                //NOTE: remember that the names of the folders indictae priority
+                //NOTE: remember that the names of the folders indicate priority
                 Main.GetSortedDirectories(path.join(boxFrontPath, gameKey.system), (err, listing) => {
                     if (err) return callback(500, 'err 2');
                     
@@ -46,28 +44,29 @@ module.exports = new (function() {
                         pathsToSearch.push(path.join(boxFrontPath, gameKey.system, listing[i], gameKey.title, '0.jpg'));
                     }
 
-                    Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
-                        if (err) {
-                            
-                            //an err here STILL means we couldn't find art
+                    //to the end, add the box template image
+                    //pathsToSearch.push(path.join(boxFrontPath, system, '0.png'));
 
-                            //ok, so if we never get back a genuine image, we have to return the "no box art" image instead
-                            GetEmptyCartridgeImage(gameKey, width, height, (status, err, imageBuffer) => {
-                                if (err) return callback(status, err);
-            
-                                //if retrieved, always return with status of 203 "Non-Authoritative Information" 
-                                //to inform the client the art returned is the "no art found" solution
-                                return callback(203, null, imageBuffer)
+                    Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
+                        
+                        var _finally = function(status, buffer) {
+
+                            Main.ResizeImage(processedPath, buffer, width, height, function(err, output) {
+                                if (err) return callback(500, err);
+                                callback(status, null, output);
+                            });
+                        }
+                        
+
+                        if (err) {
+                            //if no images returned, composite on template
+                            _self.CompositeTextOnBoxTemplate(gameKey.system, gameKey.title, (err, buffer) => {
+                                if (err) return callback(500, err);
+                                _finally(203, buffer); //if composited text on a box template, use 203 (external source)
                             });
                         }
                         else {
-
-                            Main.ResizeImage(processedPath, data, width, height, function(err, output) {
-                                if (err) return callback(500, err);
-                                
-                                // 201 "Created" informs the client a processed image was created
-                                callback(201, null, output);    
-                            });
+                            _finally(201, data); // 201 "Created" informs the client a processed image was created from the media folder
                         }
                     });
                 });
@@ -79,49 +78,26 @@ module.exports = new (function() {
         });
     };
 
-    var GetEmptyCartridgeImage = function(gameKey, width, height, callback) {
-        
-        //create a string for a unique filename (since these can be undef or null).
-        var widthAndHeight = (width) ? 'w' + width : '';
-        widthAndHeight += (height) ? 'h' + height : '';
+    this.CompositeTextOnBoxTemplate = function(system, text, callback) {
 
-        var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, widthAndHeight);
-        
-        var pathsToSearch = [
-            path.join(processedPath, '0.jpg'), //the resized "no box"
-            path.join(boxFrontPath, gameKey.system, '0.png') //the original "no box", yes in png
-        ];
-
-        Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
+        fs.readFile(path.join(boxFrontPath, system, '0.png'), (err, data) => {
             if (err) {
-                return callback(404, err); //ok, we really don't have this! lol
+                return callback(err);
             } 
 
-            //create processed image by resizing on the fly
-            if (successIndex != 0) {
+            //compositing will be required
+            var compositingConfig = config.compositing[system];
 
-                //compositing will be required
-                var compositingConfig = config.compositing[gameKey.system];
-                if (!compositingConfig) {
-                    return callback(500, 'no composite config found for system: ' + gameKey.system);
+            if (!compositingConfig) {
+                return callback('no composite config found for system: ' + system);
+            }
+
+            Main.ComposeTextOnImage(data, text, compositingConfig, function(err, output) {
+                if (err) {
+                    return callback(err);
                 }
-
-                Main.ResizeImage(processedPath, data, width, height, function(err, output) {
-                    if (err) {
-                        return callback(500, err);
-                    }
-
-                    //callback(203, null, new Buffer(output).toString('base64'));
-                    callback(203, null, output);
-
-                }, gameKey.title, compositingConfig);
-
-            }
-            //we got back our already resized image from the process folder
-            else {
-                
-                callback(203, null, data);
-            }
+                return callback(null, output);
+            });
         });
     };
 

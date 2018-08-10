@@ -72,7 +72,7 @@ router.get('/title/:cdnSizeModifier/:gk', (req, res, next) => {
 
 // I want to prevent any client from simply asking for any size image since that image is saved
 //back to the cdn. let's instead white list allowable resizes
-router.get('/box/:cdnSizeModifier/:gk', (req, res, next) => {
+router.get('/box/front/:cdnSizeModifier/:gk', (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
@@ -126,6 +126,23 @@ router.get('/audit/media/box/front/:system', function(req, res) {
 
         return res.status(200).json(auditResult);
     });
+});
+
+router.get('/box/test/:system', function(req, res) {
+
+    var system = req.params.system;
+    var text = req.query.text;
+
+    if (!system) {
+        return res.status(400).end('err 0'); //400 Bad Request
+    }
+
+    Box.CompositeTextOnBoxTemplate(system, text, function(err, buffer) {
+        if (err) res.status(500).send(err);
+
+        res.end(buffer, 'buffer');
+
+    }, true); //true for opt_noSaveOnResize
 });
 
 var SetCORS = function(res, method) {
