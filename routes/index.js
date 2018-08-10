@@ -43,11 +43,10 @@ router.post('/contribute/titlescreen', (req, res, next) => {
     });
 });
 
-router.get('/titlescreen/:gk', (req, res, next) => {
+router.get('/title/:cdnSizeModifier/:gk', (req, res, next) => {
 
+    var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
-    var width = req.query.w;
-    var height = req.query.h;
 
     SetCORS(res);
 
@@ -56,12 +55,12 @@ router.get('/titlescreen/:gk', (req, res, next) => {
         return res.status(400).json('err 0'); //400 Bad Request
     }
 
-    //convert optional params
-    if (width) {
-        width = parseInt(width, 10);
-    }
-    if (height) {
-        height = parseInt(height, 10);
+    var width, height;
+
+    switch (modifier) {
+        case 'a':
+            width = 160; //collections, suggestions
+            break;
     }
 
     Titlescreen.Get(gk, width, height, (status, err, base64ImageData) => {
@@ -87,7 +86,7 @@ router.get('/box/:cdnSizeModifier/:gk', (req, res, next) => {
 
     var width, height;
 
-    switch (cdnSizeModifier) {
+    switch (modifier) {
         case 'a':
             width = 116; //collections, suggestions
             break;
