@@ -71,12 +71,12 @@ router.get('/titlescreen/:gk', (req, res, next) => {
     });
 });
 
-router.get('/box/front/:gk', (req, res, next) => {
+// I want to prevent any client from simply asking for any size image since that image is saved
+//back to the cdn. let's instead white list allowable resizes
+router.get('/box/:cdnSizeModifier/:gk', (req, res, next) => {
 
+    var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
-    var width = req.query.w;
-    var height = req.query.h;
-    var base64 = req.query.b;
 
     SetCORS(res);
 
@@ -85,24 +85,31 @@ router.get('/box/front/:gk', (req, res, next) => {
         return res.status(400).end('err 0'); //400 Bad Request
     }
 
-    //convert optional params
-    if (width) {
-        width = parseInt(width, 10);
-    }
-    if (height) {
-        height = parseInt(height, 10);
+    var width, height;
+
+    switch (cdnSizeModifier) {
+        case 'a':
+            width = 116; //collections, suggestions
+            break;
+        case 'b':
+            width = 50; //search auto-complete
+            break;
+        case 'c':
+            width = 170; //game details (below emulator)
+            break;
+        case 'd':
+            width = 200; //game loading??
+            break;
+        case 'e':
+            width = 256; //texture for 3d game loading??
+            height = 256;
+            break;
     }
 
     Box.GetFront(gk, width, height, (status, err, imageBuffer) => {
         if (err) {
             return res.status(status).json(err);
         }
-
-        if (base64) {
-            res.status(status).send(new Buffer(imageBuffer).toString('base64'));
-            return;
-        }
-        
         res.status(status).end(imageBuffer, 'buffer');
     });
 });
