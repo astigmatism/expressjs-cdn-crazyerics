@@ -70,6 +70,13 @@
             "width": 387,
             "height": 329
         },
+        "nds": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 104,
+            "y": 17,
+            "width": 363,
+            "height": 442
+        },
         "nes": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 10,
