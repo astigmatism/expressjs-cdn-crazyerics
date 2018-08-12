@@ -1,4 +1,4 @@
-//const Sharp = require('sharp'); //http://sharp.dimens.io/en/stable/install/
+const Sharp = require('sharp'); //http://sharp.dimens.io/en/stable/install/
 var fs = require('fs-extra');
 var pako = require('pako');
 var btoa = require('btoa');
@@ -27,7 +27,7 @@ module.exports = new (function() {
         }
 
         //resize with sharp library
-        JimpResize(image, width, height, (err, output) => {
+        SharpResize(image, width, height, (err, output) => {
             if (err) {
                 return callback(err);
                 //if you're thinking to attempt Jimp on Sharp's failure, I tried this and Jimp always failed too
@@ -68,18 +68,18 @@ module.exports = new (function() {
         });
     };
 
-    // var SharpResize = function(image, width, height, callback) {
+    var SharpResize = function(image, width, height, callback) {
 
-    //     Sharp(image)
-    //         .resize(width, height, {
-    //             kernel: Sharp.kernel.lanczos3
-    //         })
-    //         .toBuffer((err, buffer) => {
-    //             if (err) return callback(err);
+        Sharp(image)
+            .resize(width, height, {
+                kernel: Sharp.kernel.lanczos3
+            })
+            .toBuffer((err, buffer) => {
+                if (err) return callback(err);
 
-    //             callback(null, buffer)
-    //         });
-    // };
+                callback(null, buffer)
+            });
+    };
 
     this.ComposeTextOnImage = function(image, text, compositeConfig, callback) {
 
