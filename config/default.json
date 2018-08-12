@@ -3,37 +3,37 @@
         "32x": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 110,
-            "y": 10,
+            "y": 0,
             "width": 380,
-            "height": 677
+            "height": 697
         },
         "a2600": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 53,
-            "y": 208,
-            "width": 389,
-            "height": 434
+            "x": 54,
+            "y": 199,
+            "width": 401,
+            "height": 446
         },
         "a7800": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 53,
-            "y": 103,
-            "width": 398,
-            "height": 532
+            "x": 49,
+            "y": 93,
+            "width": 412,
+            "height": 552
         },
         "gba": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 130,
-            "y": 10,
+            "y": 0,
             "width": 371,
-            "height": 494
+            "height": 467
         },
         "gb": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 105,
+            "x": 110,
             "y": 0,
-            "width": 371,
-            "height": 494
+            "width": 361,
+            "height": 470
         },
         "gen": {
             "font": "Poppins-Italic-48-Mercury.fnt",
@@ -51,10 +51,10 @@
         },
         "jag": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 10,
-            "y": 10,
-            "width": 480,
-            "height": 480
+            "x": 20,
+            "y": 0,
+            "width": 460,
+            "height": 490
         },
         "lynx": {
             "font": "Poppins-Italic-48-Mercury.fnt",
@@ -72,17 +72,17 @@
         },
         "nds": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 104,
+            "x": 114,
             "y": 17,
-            "width": 363,
+            "width": 353,
             "height": 442
         },
         "nes": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 10,
-            "y": 40,
-            "width": 480,
-            "height": 645
+            "x": 0,
+            "y": 51,
+            "width": 500,
+            "height": 552
         },
         "ngpx": {
             "font": "Poppins-Italic-48-Mercury.fnt",
@@ -93,37 +93,37 @@
         },
         "pce": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 63,
-            "y": 295,
-            "width": 384,
-            "height": 382
+            "x": 65,
+            "y": 99,
+            "width": 372,
+            "height": 395
         },
         "snes": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 10,
-            "y": 14,
-            "width": 400,
-            "height": 279
+            "y": 15,
+            "width": 410,
+            "height": 278
         },
         "sms": {
             "font": "Poppins-Italic-48-Black.fnt",
-            "x": 52,
+            "x": 20,
             "y": 126,
-            "width": 405,
-            "height": 526
+            "width": 460,
+            "height": 510
         },
         "vb": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 10,
-            "y": 39,
+            "y": 29,
             "width": 480,
-            "height": 351
+            "height": 323
         },
         "vect": {
             "font": "Poppins-Italic-48-Black.fnt",
-            "x": 10,
+            "x": 20,
             "y": 134,
-            "width": 480,
+            "width": 460,
             "height": 459
         }
     }

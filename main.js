@@ -19,29 +19,28 @@ module.exports = new (function() {
      * @param {Number | null | undefined} height 
      * @param {*} callback 
      */
-    this.ResizeImage = function(processedPath, image, width, height, callback, opt_text, opt_compositeConfig) {
+    this.ResizeImage = function(processedPath, image, width, height, callback, opt_noSaveOnResize) {
 
-        //bail when both are not defined
+        //bail when both are not defined and there's no compositing
         if (!width && !height) {
             return callback(null, image);
         }
 
-        //helper function will compose text if needed, otherwise returns the same image buffer
-        ComposeTextOnImage(image, opt_text, opt_compositeConfig, (err, output) => {
-            if (err) return callback(err);
+        //resize with sharp library
+        SharpResize(image, width, height, (err, output) => {
+            if (err) {
+                return callback(err);
+                //if you're thinking to attempt Jimp on Sharp's failure, I tried this and Jimp always failed too
+            }
 
-            //resize with sharp library
-            SharpResize(output, width, height, (err, output) => {
-                if (err) {
-                    return callback(err);
-                    //if you're thinking to attempt Jimp on Sharp's failure, I tried this and Jimp always failed too
-                }
+            if (opt_noSaveOnResize) {
+                return callback(null, output);
+            }
 
-                SaveProcessedImage(processedPath, output, (err, buffer) => {
-                    if (err) return callback(err);
+            SaveProcessedImage(processedPath, output, (err, buffer) => {
+                if (err) return callback(err);
 
-                    return callback(null, buffer);
-                });
+                return callback(null, buffer);
             });
         });
     };
@@ -82,38 +81,74 @@ module.exports = new (function() {
             });
     };
 
-    var ComposeTextOnImage = function(image, text, compositeConfig, callback) {
+    this.ComposeTextOnImage = function(image, text, compositeConfig, callback) {
 
-        //bail if nothing to compose
-        if (!text || !compositeConfig) {
-            return callback(null, image);
-        }
 
-        Jimp.read(image, (err, output) => {
+        //instead create new image and compose text on it
+        Jimp.create(compositeConfig.width, compositeConfig.height, 0x0, function (err, output) {
             if (err) return callback(err);
+
+            var w = output.bitmap.width; // the width of the image
+            var h = output.bitmap.height; // the height of the image
+
+            output
+                .rgba(false)
+                .background(0xFFFFFFFF)
 
             Jimp.loadFont(path.join(mediaRoot, compositeConfig.font)).then((font) => {
 
                 output.print(
                     font,
-                    compositeConfig.x, //x start
-                    compositeConfig.y, //y srart
+                    0, //x start
+                    0, //y srart
                     {
                         text: text,
                         alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
                         alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
                     },
-                    compositeConfig.width, //width
-                    compositeConfig.height //height
+                    w, //width
+                    h //height
                 );
 
-                output.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
-                    if (err) return callback(err);
-    
-                    return callback(null, buffer);
+                Jimp.read(image, (err, outputBase) => {
+
+                    outputBase.composite(output, compositeConfig.x, compositeConfig.y); 
+
+                    outputBase.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
+                        if (err) return callback(err);
+        
+                        return callback(null, buffer);
+                    });
                 });
             });
-        }); 
+        });
+
+
+        // Jimp.read(image, (err, output) => {
+        //     if (err) return callback(err);
+
+        //     Jimp.loadFont(path.join(mediaRoot, compositeConfig.font)).then((font) => {
+
+        //         output.print(
+        //             font,
+        //             compositeConfig.x, //x start
+        //             compositeConfig.y, //y srart
+        //             {
+        //                 text: text,
+        //                 alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+        //                 alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+        //             },
+        //             compositeConfig.width, //width
+        //             compositeConfig.height //height
+        //         );
+
+        //         output.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
+        //             if (err) return callback(err);
+    
+        //             return callback(null, buffer);
+        //         });
+        //     });
+        // }); 
     };
 
     var JimpResize = function(image, width, height, callback) {
