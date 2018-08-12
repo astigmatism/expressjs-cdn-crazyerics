@@ -1,8 +1,8 @@
+const Sharp = require('sharp'); //http://sharp.dimens.io/en/stable/install/
 var fs = require('fs-extra');
 var pako = require('pako');
 var btoa = require('btoa');
 var atob = require('atob');
-const Sharp = require('sharp'); //http://sharp.dimens.io/en/stable/install/
 const Jimp = require('jimp'); //https://www.npmjs.com/package/jimp
 const path = require('path');
 
