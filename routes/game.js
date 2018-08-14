@@ -25,7 +25,7 @@ var Game = require('../game');
 
 // I want to prevent any client from simply asking for any size image since that image is saved
 //back to the cdn. let's instead white list allowable resizes
-router.get('/:system/:gk', cors(corsConfig), (req, res, next) => {
+router.get('/:system/:gk', cors(), (req, res, next) => {
 
     var system = req.params.system;
     var gk = req.params.gk;
