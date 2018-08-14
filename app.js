@@ -4,10 +4,16 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 var routes = require('./routes/index');
+var titleRoutes = require('./routes/title');
+var boxRoutes = require('./routes/box');
+var gameRoutes = require('./routes/game');
 
 var app = express();
+
+//CORS whitelisting
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,6 +36,9 @@ app.use(express.static('public', {
 }));
 
 app.use('/', routes);
+app.use('/title', titleRoutes);
+app.use('/box', boxRoutes);
+app.use('/game', gameRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -48,5 +57,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+var port = app.get('port') || 8001;
+var server = app.listen(port);
 
 module.exports = app;

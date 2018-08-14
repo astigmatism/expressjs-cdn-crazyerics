@@ -1,4 +1,7 @@
 {
+    "cors": {
+        "whitelist": ["http://crazyerics.com", "http://www.crazyerics.com", "http://localhost:3000"]
+    },
     "compositing": {
         "32x": {
             "font": "Poppins-Italic-48-Mercury.fnt",
