@@ -39,7 +39,7 @@ router.post('/contribute', cors(), (req, res, next) => {
     });
 });
 
-router.get(':cdnSizeModifier/:gk', cors(), (req, res, next) => {
+router.get('/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
