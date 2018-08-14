@@ -21,9 +21,10 @@
 const express = require('express');
 const Titlescreen = require('../titlescreen');
 const cors = require('cors');
+const corsConfig = require('../corsConfig');
 const router = express.Router();
 
-router.post('/contribute', cors(), (req, res, next) => {
+router.post('/contribute', cors(corsConfig), (req, res, next) => {
     
     var formdata = req.body.cxhr; //this name means nothing, but it MUST be sent by the client of course
 
@@ -38,7 +39,7 @@ router.post('/contribute', cors(), (req, res, next) => {
     });
 });
 
-router.get(':cdnSizeModifier/:gk', cors(), (req, res, next) => {
+router.get(':cdnSizeModifier/:gk', cors(corsConfig), (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;

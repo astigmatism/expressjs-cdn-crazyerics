@@ -22,10 +22,11 @@ var Main = require('../main');
 var Box = require('../box');
 var router = express.Router();
 var cors = require('cors');
+var corsConfig = require('../corsConfig');
 
 // I want to prevent any client from simply asking for any size image since that image is saved
 //back to the cdn. let's instead white list allowable resizes
-router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
+router.get('/front/:cdnSizeModifier/:gk', cors(corsConfig), (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
