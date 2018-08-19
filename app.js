@@ -27,13 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 //CORS
-app.use(express.static('public', {
-  setHeaders: (res) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,POST');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  }
-}));
+app.use(express.static('public', cors()));
 
 app.use('/', routes);
 app.use('/title', titleRoutes);
