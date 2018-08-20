@@ -63,7 +63,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-var port = app.get('port') || 8001;
-var server = app.listen(port);
+// var port = app.get('port') || 8001;
+// var server = app.listen(port);
 
 module.exports = app;
