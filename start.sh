@@ -1,1 +1,0 @@
-pm2 start --name cdn -i -1 npm -- start - (pm2 monit didnt show anything)

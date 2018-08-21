@@ -1,0 +1,1 @@
+pm2 start /media/data/expressjs-cdn-crazyerics/app.js --name cdn -i -1
