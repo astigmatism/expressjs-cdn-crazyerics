@@ -10,5 +10,4 @@ confirmbigdel = false
 prefer = newer
 silent = false
 times = true
-repeat = watch
 logfile = /root/.unison/.unison.log
