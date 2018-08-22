@@ -1,4 +1,8 @@
 {
+    "contributions": {
+        "source": "/media/data/expressjs-cdn-crazyerics/contributions",
+        "destinations": ["ssh://root@192.168.1.6/../media/data/expressjs-cdn-crazyerics/contributions"]
+    },
     "cors": {
         "whitelist": ["http://crazyerics.com", "http://www.crazyerics.com", "http://localhost:3000"]
     },

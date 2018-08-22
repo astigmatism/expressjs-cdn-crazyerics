@@ -60,7 +60,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-//var port = app.get('port') || 8001;
-app.listen(3000, () => console.log('CDN started and listening on port 3000'));
+app.listen(3001, () => console.log('CDN started and listening on port 3001'));
 
 module.exports = app;
