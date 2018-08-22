@@ -1,5 +1,5 @@
-root = ssh://root@192.168.1.6//media/data/expressjs-cdn-crazyerics/contributions
 root = /media/data/expressjs-cdn-crazyerics/contributions
+root = ssh://root@192.168.1.6//media/data/expressjs-cdn-crazyerics/contributions
 
 auto = true
 batch = true

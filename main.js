@@ -204,17 +204,11 @@ module.exports = new (function() {
 
     this.SyncContributions = function(callback) {
 
-        //for each server in destionations
-        async.forEachOf(config.contributions.destinations, (destination, index, nextDestination) => {
-
-            process.exec('unison ' + config.unison.profile, (err, stdout, stderr) => {
-                if (err) return callback(err);
-
-                console.log(stdout);
-                nextDestination();
-            });
-        }, err => {
+        process.exec('unison ' + config.unison.profile, (err, stdout, stderr) => {
             if (err) return callback(err);
+
+            console.log(stdout);
+            callback();
         });
     };
 
