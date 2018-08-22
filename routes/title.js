@@ -22,8 +22,12 @@ const express = require('express');
 const Titlescreen = require('../titlescreen');
 const cors = require('cors');
 const corsConfig = require('../corsConfig');
+const Main = require('../main');
 const router = express.Router();
 
+//this endpoint is designed to be accessed by ONE cdn server
+//we will then update the other servers async
+//see nginx conf on the server to configure.
 router.post('/contribute', cors(), (req, res, next) => {
     
     var formdata = req.body.cxhr; //this name means nothing, but it MUST be sent by the client of course
@@ -34,6 +38,10 @@ router.post('/contribute', cors(), (req, res, next) => {
 
     Titlescreen.Set(formdata, (status, err, response) => {
         if (err) return res.status(status).json(err);
+        
+        Main.SyncContributions(err => {
+            console.log(err);
+        });
 
         res.json(response);
     });

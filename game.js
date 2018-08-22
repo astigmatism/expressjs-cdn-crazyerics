@@ -1,8 +1,6 @@
 const fs = require('fs-extra');
 const Main = require('./main.js');
 const path = require('path');
-const config = require('config');
-const async = require('async');
 
 const processedRoot = path.join(__dirname, '/','processed','game');
 const gameRoot = path.join(__dirname, '/','media','game');

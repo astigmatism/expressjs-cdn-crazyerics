@@ -5,6 +5,9 @@ var btoa = require('btoa');
 var atob = require('atob');
 const Jimp = require('jimp'); //https://www.npmjs.com/package/jimp
 const path = require('path');
+const process = require('child_process');
+const async = require('async');
+const config = require('config');
 
 const mediaRoot = path.join(__dirname, '/','media');
 
@@ -198,6 +201,22 @@ module.exports = new (function() {
             return callback(null, locations);
         });
     }
+
+    this.SyncContributions = function(callback) {
+
+        //for each server in destionations
+        async.forEachOf(config.contributions.destinations, (destination, index, nextDestination) => {
+
+            process.exec('unison ' + config.contributions.source + ' ' + destination, ['-auto'], (err, stdout, stderr) => {
+                if (err) return callback(err);
+
+                console.log(stdout);
+                nextDestination();
+            });
+        }, err => {
+            if (err) return callback(err);
+        });
+    };
 
     this.OpenFileAlternates = function(paths, callback, _currentIndex) {
 
