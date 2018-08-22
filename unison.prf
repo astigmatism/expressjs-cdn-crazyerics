@@ -1,0 +1,18 @@
+root = ssh://root@192.168.1.6//media/data/expressjs-cdn-crazyerics/contributions
+root = /media/data/expressjs-cdn-crazyerics/contributions
+
+sshargs = -oIdentityFile=/home/<USER>/.ssh/id_rsa_share
+
+auto = true
+batch = true
+perms = 0
+ui = text
+confirmmerge = false
+confirmbigdel = false
+prefer = newer
+silent = false
+times = true
+repeat = watch
+logfile = /home/<USER>/.unison.log
+
+ignore = Name {.mypasswords.kdbx.lock}
