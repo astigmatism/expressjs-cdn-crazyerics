@@ -207,7 +207,7 @@ module.exports = new (function() {
         //for each server in destionations
         async.forEachOf(config.contributions.destinations, (destination, index, nextDestination) => {
 
-            process.exec('unison ' + config.contributions.source + ' ' + destination, ['-auto'], (err, stdout, stderr) => {
+            process.exec('unison ' + config.unison.profile, (err, stdout, stderr) => {
                 if (err) return callback(err);
 
                 console.log(stdout);

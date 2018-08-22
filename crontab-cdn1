@@ -1,0 +1,10 @@
+# This is a readme file for cron on CDN-1
+# Whichever server gets to be CDN 1 also gets more responsibility,
+# namely for handling uploads and then boardcasting the changes to the other
+# cdn servers. I do this with unison (https://www.cis.upenn.edu/~bcpierce/unison/)
+# CDN 1 needs to start a service which includes a file watch on the contributions
+# directory
+
+
+# "crontab -e" content:
+@reboot /media/data/expressjs-cdn-crazyerics/autostart.sh # be sure this file is executable

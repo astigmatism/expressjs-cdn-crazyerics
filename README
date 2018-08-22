@@ -1,0 +1,30 @@
+Hello!
+
+As this CDN project has gotten bigger and more complex, the more worried I am that I'll forget all the moving
+parts of the system! Let's keep this file updated with everything you need to know about how toget it all back up and running
+
+cdn.crazyerics.com 
+|
+Synology reverse proxy
+|
+resolves to nginx docker container (192.168.1.2:73779 or something, make sure the port on the container is defined and not "auto")
+|
+Nginx container is a LOAD BALANCER, its config can be found in this project
+|                       |
+CDN 1                   CDN 2
+|
+This CDN processes
+contributions. 
+Unison has a service
+running to watch the
+dir and boardcast
+changes to the other
+servers
+
+- Each CDN will need cron installed. See the crontab files here for more notes and definitions
+
+Unison folder watch works with a profile, executed "unison [profile]". This will barf the warning:
+"Profile /root/.unison/[name].prf does not exist"
+so create it first: 
+"touch /root/.unison/cdn1.prf"
+then nano in and paste the contents of the file here called "unison.prf"

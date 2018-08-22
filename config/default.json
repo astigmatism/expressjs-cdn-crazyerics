@@ -1,7 +1,6 @@
 {
-    "contributions": {
-        "source": "/media/data/expressjs-cdn-crazyerics/contributions",
-        "destinations": ["ssh://root@192.168.1.6/../media/data/expressjs-cdn-crazyerics/contributions"]
+    "unison": {
+        "profile": "cdn1"
     },
     "cors": {
         "whitelist": ["http://crazyerics.com", "http://www.crazyerics.com", "http://localhost:3000"]
