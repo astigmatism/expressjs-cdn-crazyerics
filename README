@@ -7,25 +7,22 @@ cdn.crazyerics.com
 |
 Synology reverse proxy
 |
-resolves to nginx docker container (192.168.1.2:73779 or something, make sure the port on the container is defined and not "auto")
+resolves to nginx docker container (192.168.1.2:73779 or some port, make sure the port on the container is defined and not "auto")
 |
 Nginx container is a LOAD BALANCER, its config can be found in this project
+It forwards all sorts of traffic and limits the speed on certain routes
 |                       |
 CDN 1                   CDN 2
 |
 This CDN processes
-contributions. 
-Unison has a service
-running to watch the
-dir and boardcast
-changes to the other
-servers
+contributions using
+unison.
 
 - Each CDN will need cron installed. See the crontab files here for more notes and definitions
 
-Unison sync works with a profile, executed "unison [profile]". Despite being in code, all traffic
+Unison sync works with a profile, executed "unison [profile]". Despite being exec in code, all traffic
 for contributions will go to CDN1. An external process will be fired to sync the files on CDN1 to the
-others. you can test it on CDN with "unison cdn1"
+others. you can test it on CDN1 with "unison cdn1"
 If you get:
 "Profile /root/.unison/[name].prf does not exist"
 create it first: 

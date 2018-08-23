@@ -2,15 +2,15 @@ var fs = require('fs-extra');
 var Main = require('./main.js');
 const path = require('path');
 
-const processedRoot = path.join(__dirname, '/','processed','titlescreen');
-const mediaRoot = path.join(__dirname, '/','media','titlescreen');
-const contributionsRoot = path.join(__dirname, '/','contributions','titlescreen');
+const processedRoot = path.join(__dirname, '/','processed');
+const mediaRoot = path.join(__dirname, '/','media');
+const contributionsRoot = path.join(__dirname, '/','contributions');
 
 module.exports = new (function() {
 
     var _self = this;
 
-	this.Get = function(gk, width, height, callback) {
+	this.Get = function(screenType, gk, width, height, callback) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
@@ -24,10 +24,10 @@ module.exports = new (function() {
         var widthAndHeight = (width) ? 'w' + width : '';
         widthAndHeight += (height) ? 'h' + height : '';
 
-        var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file, widthAndHeight);
+        var processedPath = path.join(processedRoot, screenType, screenTypegameKey.system, gameKey.title, gameKey.file, widthAndHeight);
         var processedFilePath = path.join(processedPath, '0.jpg');
-        var mediaFilePath = path.join(mediaRoot, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
-        var contributionFilePath = path.join(contributionsRoot, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
+        var mediaFilePath = path.join(mediaRoot, screenType, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
+        var contributionFilePath = path.join(contributionsRoot, screenType, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
 
         var pathsToSearch = [processedFilePath, mediaFilePath, contributionFilePath];
 
@@ -56,8 +56,8 @@ module.exports = new (function() {
         });
     };
 
-    this.Set = function(formdata, callback) {
-
+    this.Set = function(screenType, formdata, callback) {
+        
         var data = Main.Decompress.json(formdata);
 
         //ensure decopressed data is present before continuing
@@ -66,19 +66,19 @@ module.exports = new (function() {
             var gameKey = data.gameKey;
             var contents = data.contents;
 
-            var titlescreenPath = path.join(contributionsRoot, gameKey.system, gameKey.title, gameKey.file);
+            var screenContributionPath = path.join(contributionsRoot, screenType, gameKey.system, gameKey.title, gameKey.file);
             var filename = '0.jpg';
 
             //remove existing processed folder (all w and h mods inside)
             //so that new can be generated from this contribution
-            fs.emptyDir(path.join(processedRoot, gameKey.system, gameKey.title, gameKey.file), (err) => {
+            fs.emptyDir(path.join(processedRoot, screenType, gameKey.system, gameKey.title, gameKey.file), (err) => {
                 if (err) return callback(500, 'err 0');
 
                 //write file
-                fs.ensureDir(titlescreenPath, err => {
+                fs.ensureDir(screenContributionPath, err => {
                     if (err) return callback(500, 'err 1');
 
-                    fs.writeFile(path.join(titlescreenPath, filename), contents, 'base64', (err) => {
+                    fs.writeFile(path.join(screenContributionPath, filename), contents, 'base64', (err) => {
                         if (err) return callback(500, 'err 2');
 
                         return callback(null, null, contents);

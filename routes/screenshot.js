@@ -19,24 +19,41 @@
  */
 
 const express = require('express');
-const Titlescreen = require('../titlescreen');
+const Screenshot = require('../screenshot');
 const cors = require('cors');
 const corsConfig = require('../corsConfig');
 const Main = require('../main');
 const router = express.Router();
+const config = require('config');
+
+const screenTypesRegex = (function() {
+
+    var result = '/(';
+    var i = 0;
+    var screenTypes = config.screentypes;
+    for (i; i < screenTypes.length; ++i) {
+        result += screenTypes[i] + ((i < screenTypes.length - 1) ? '|' : '');
+    }
+    result += ')/';
+    return result;
+})();
 
 //this endpoint is designed to be accessed by ONE cdn server
 //we will then update the other servers async
 //see nginx conf on the server to configure.
-router.post('/contribute', cors(), (req, res, next) => {
+router.post('/:screentype/contribute', cors(), (req, res, next) => {
     
     var formdata = req.body.cxhr; //this name means nothing, but it MUST be sent by the client of course
+    var screenType = req.params.screentype; //title, screen
 
     if (!formdata) {
         return res.status(400).json('err 0');
     }
+    if (!screenType.match(screenTypesRegex)) {
+        return res.status(400).json('err 1');
+    }
 
-    Titlescreen.Set(formdata, (status, err, response) => {
+    Screenshot.Set(screenType, formdata, (status, err, response) => {
         if (err) return res.status(status).json(err);
         
         Main.SyncContributions(err => {
@@ -47,14 +64,18 @@ router.post('/contribute', cors(), (req, res, next) => {
     });
 });
 
-router.get('/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
+router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
+    var screenType = req.params.screentype; //title, screen
 
     //gk required
     if (!gk) {
         return res.status(400).json('err 0'); //400 Bad Request
+    }
+    if (!screenType.match(screenTypesRegex)) {
+        return res.status(400).json('err 1');
     }
 
     var width, height;
@@ -65,7 +86,7 @@ router.get('/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
             break;
     }
 
-    Titlescreen.Get(gk, width, height, (status, err, base64ImageData) => {
+    Screenshot.Get(screenType, gk, width, height, (status, err, base64ImageData) => {
         if (err) return res.status(status).json(err);
 
         res.status(status).send(base64ImageData);
