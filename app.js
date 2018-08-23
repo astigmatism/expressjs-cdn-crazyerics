@@ -38,7 +38,7 @@ app.use(express.static('public', {
 }));
 
 app.use('/', routes);
-app.use('/screen', screenshotRoutes);
+app.use('/screenshot', screenshotRoutes);
 app.use('/box', boxRoutes);
 app.use('/game', gameRoutes);
 
