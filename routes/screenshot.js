@@ -82,10 +82,13 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
 
     switch (modifier) {
         case 'a':
-            width = 160; //collections, suggestions
+            width = 160;
             break;
         case 'b':
             width = 320; //most of the emumovies in SQ are this size (320x240)
+            break;
+        case 'c':
+            width = 240; //halfway between 320 and 160 :)
             break;
     }
 
