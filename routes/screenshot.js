@@ -84,6 +84,9 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
         case 'a':
             width = 160; //collections, suggestions
             break;
+        case 'b':
+            width = 320; //most of the emumovies in SQ are this size (320x240)
+            break;
     }
 
     Screenshot.Get(screenType, gk, width, height, (status, err, base64ImageData) => {

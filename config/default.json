@@ -3,6 +3,7 @@
         "profile": "cdn1"
     },
     "screentypes": ["title", "screen"],
+    "videotypes": ["sq"],
     "cors": {
         "whitelist": ["http://crazyerics.com", "http://www.crazyerics.com", "http://localhost:3000"]
     },
