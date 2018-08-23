@@ -24,7 +24,7 @@ module.exports = new (function() {
         var widthAndHeight = (width) ? 'w' + width : '';
         widthAndHeight += (height) ? 'h' + height : '';
 
-        var processedPath = path.join(processedRoot, screenType, screenTypegameKey.system, gameKey.title, gameKey.file, widthAndHeight);
+        var processedPath = path.join(processedRoot, screenType, gameKey.system, gameKey.title, gameKey.file, widthAndHeight);
         var processedFilePath = path.join(processedPath, '0.jpg');
         var mediaFilePath = path.join(mediaRoot, screenType, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
         var contributionFilePath = path.join(contributionsRoot, screenType, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
