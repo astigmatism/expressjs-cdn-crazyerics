@@ -28,13 +28,13 @@ const config = require('config');
 
 const screenTypesRegex = (function() {
 
-    var result = '/(';
+    var result = '(';
     var i = 0;
     var screenTypes = config.screentypes;
     for (i; i < screenTypes.length; ++i) {
         result += screenTypes[i] + ((i < screenTypes.length - 1) ? '|' : '');
     }
-    result += ')/';
+    result += ')';
     return result;
 })();
 
