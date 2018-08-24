@@ -67,6 +67,24 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
     }, skipSave);
 });
 
+router.get('/front/:gk', function(req, res) {
+
+    var gk = req.params.gk;
+    var location = req.query.location;
+
+    //gk required
+    if (!gk) {
+        return res.status(400).end('err 0'); //400 Bad Request
+    }
+
+    Box.GetFrontSrc(gk, location, (status, err, imageBuffer) => {
+        if (err) {
+            return res.status(status).json(err);
+        }
+        res.status(status).end(imageBuffer, 'buffer');
+    });
+});
+
 router.get('/audit/front/:system', (req, res) => {
 
     var system = req.params.system;
@@ -81,22 +99,5 @@ router.get('/audit/front/:system', (req, res) => {
         return res.status(200).json(auditResult);
     });
 });
-
-// router.get('/test/:system', function(req, res) {
-
-//     var system = req.params.system;
-//     var text = req.query.text;
-
-//     if (!system) {
-//         return res.status(400).end('err 0'); //400 Bad Request
-//     }
-
-//     Box.CompositeTextOnBoxTemplate(system, text, function(err, buffer) {
-//         if (err) res.status(500).send(err);
-
-//         res.end(buffer, 'buffer');
-
-//     }, true); //true for opt_noSaveOnResize
-// });
 
 module.exports = router;

@@ -5,8 +5,9 @@ const config = require('config');
 const async = require('async');
 
 const processedRoot = path.join(__dirname, '/','processed','box', 'front');
-const boxPath = path.join(__dirname, '/','media','box');
-const boxFrontPath = path.join(boxPath, 'front');
+const mediaRoot = path.join(__dirname, '/','media','box');
+const mediaFrontRoot = path.join(mediaRoot, 'front');
+const templateRoot = path.join(mediaRoot, 'template');
 
 module.exports = new (function() {
 
@@ -27,50 +28,37 @@ module.exports = new (function() {
 
         var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, widthAndHeight);
         var processedFilePath = path.join(processedPath, '0.jpg');
-        var pathsToSearch = []; //used to build a list of locations to find the image media
+        var mediaFilePath = path.join(mediaFrontRoot, gameKey.system, gameKey.title, '0.jpg');
 
         //to save the most time, first look directly for a pre-processed image
         fs.readFile(processedFilePath, (err, processedImageBuffer) => {
+            //err here would indicate an issue getting the processed image, no problem, time to make one
             if (err) {
-                //err here would indicate an issue getting the processed image, no problem, time to make one
 
-                //next, get a directory listing of the media folder to look through
-                //NOTE: remember that the names of the folders indicate priority
-                Main.GetSortedDirectories(path.join(boxFrontPath, gameKey.system), (err, listing) => {
-                    if (err) return callback(500, 'err 2');
+                //get the media file
+                fs.readFile(mediaFilePath, (err, mediaFileBuffer) => {
                     
-                    var i = 0, len = listing.length;
-                    for (i; i < len;++i) {
-                        pathsToSearch.push(path.join(boxFrontPath, gameKey.system, listing[i], gameKey.title, '0.jpg'));
+                    var _finally = function(status, buffer) {
+
+                        Main.ResizeImage(processedPath, buffer, width, height, function(err, output) {
+                            if (err) return callback(500, err);
+                            callback(status, null, output);
+                        
+                        }, opt_skipSave);
                     }
-
-                    //to the end, add the box template image
-                    //pathsToSearch.push(path.join(boxFrontPath, system, '0.png'));
-
-                    Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
+                    
+                    //err getting the media file, time to use the blank box art with composited text
+                    if (err) {
+                        //if no images returned, composite on template
+                        _self.CompositeTextOnBoxTemplate(gameKey.system, gameKey.title, (err, compositedTextBuffer) => {
+                            if (err) return callback(500, err);
+                            _finally(203, compositedTextBuffer); //if composited text on a box template, use 203 (external source)
                         
-                        var _finally = function(status, buffer) {
-
-                            Main.ResizeImage(processedPath, buffer, width, height, function(err, output) {
-                                if (err) return callback(500, err);
-                                callback(status, null, output);
-                            
-                            }, opt_skipSave);
-                        }
-                        
-
-                        if (err) {
-                            //if no images returned, composite on template
-                            _self.CompositeTextOnBoxTemplate(gameKey.system, gameKey.title, (err, buffer) => {
-                                if (err) return callback(500, err);
-                                _finally(203, buffer); //if composited text on a box template, use 203 (external source)
-                            
-                            });
-                        }
-                        else {
-                            _finally(201, data); // 201 "Created" informs the client a processed image was created from the media folder
-                        }
-                    });
+                        });
+                    }
+                    else {
+                        _finally(201, mediaFileBuffer); // 201 "Created" informs the client a processed image was created from the media folder
+                    }
                 });
             }
             //we got back a processed image right away
@@ -80,9 +68,49 @@ module.exports = new (function() {
         });
     };
 
+    //just get the raw image src from the cdn location of choice. I use this for the media browser
+    this.GetFrontSrc = function(gk, location, callback) {
+
+        //first, we must have meaningful data out of the gk
+        var gameKey = Main.Decompress.gamekey(gk);
+        var mediaPathsToSearch = [];
+        var filePath; 
+
+        if (!gameKey) {
+            return callback(400, 'err 1');
+        }
+
+        //all this for media since it can live in many folders
+        Main.GetSortedDirectories(path.join(mediaFrontRoot, gameKey.system), (err, listing) => {
+            if (err) return callback(500, 'err 2');
+            
+            var i = 0, len = listing.length;
+            for (i; i < len;++i) {
+                mediaPathsToSearch.push(path.join(mediaFrontRoot, gameKey.system, listing[i], gameKey.title, '0.jpg'));
+            }
+
+            //still all for media, even if not need3ed :P 
+            Main.OpenFileAlternates(mediaPathsToSearch, function(err, data, successIndex) {
+
+                if (location == 'media') {
+
+                    return callback(200, null, data);
+                }
+                else {
+                    filePath = path.join(__dirname, '/', location, 'box', 'front', gameKey.system, gameKey.title, '0.jpg');
+
+                    fs.readFile(filePath, (err, buffer) => {
+                        if (err) return callback(404, 'not found')
+                        return callback(200, null, buffer);
+                    });
+                }
+            });
+        });
+    };
+
     this.CompositeTextOnBoxTemplate = function(system, text, callback) {
 
-        fs.readFile(path.join(boxFrontPath, system, '0.png'), (err, data) => {
+        fs.readFile(path.join(templateRoot, system, '0.png'), (err, data) => {
             if (err) {
                 return callback(err);
             } 
@@ -103,44 +131,27 @@ module.exports = new (function() {
         });
     };
 
-    this.Audit = function(subfolder, system, callback) {
+    this.Audit = function(boxtype, system, callback) {
 
-        var rootPath = path.join(boxPath, subfolder, system);
-        var locations = [];
+        var mediaPath = path.join(mediaRoot, boxtype, system); //boxtype: front, back, etc
         var audit = {};
 
-        //get directory listing, each folder is a source of box front art
-        Main.GetSortedDirectories(rootPath, (err, locations) => {
+        //get another directory listing
+        Main.GetSortedDirectories(mediaPath, (err, titles) => {
             if (err) return callback(500, err);
 
-            //open each location and build a manifest of found boxart
-            async.forEachOf(locations, (location, index, nextLocation) => {
+            var i = 0, len = titles.length;
+            for (i; i < len; ++i) {
+                var title = titles[i];
+                if (!audit.hasOwnProperty(title)) {
+                    
+                    //i have nothing to put in this object at the moment but perhaps ces could use something someday
+                    audit[title] = {
+                    };
+                }
+            }
 
-                //get another directory listing
-                Main.GetSortedDirectories(path.join(rootPath, location), (err, titles) => {
-                    if (err) return nextLocation(err);
-
-                    var i = 0, len = titles.length;
-                    for (i; i < len; ++i) {
-                        var title = titles[i];
-                        if (!audit.hasOwnProperty(title)) {
-                            
-                            //i have nothing to put in this object at the moment but perhaps ces could use something someday
-                            audit[title] = {
-                                source: location,
-                                rank: index
-                            };
-                        }
-                    }
-
-                    return nextLocation();
-                });
-
-            }, (err) => {
-                if (err) return callback(500, err);
-
-                return callback(null, null, audit);
-            });
+            return callback(null, null, audit);
         });
     };
 });

@@ -71,19 +71,6 @@ module.exports = new (function() {
         });
     };
 
-    // var SharpResize = function(image, width, height, callback) {
-
-    //     Sharp(image)
-    //         .resize(width, height, {
-    //             kernel: Sharp.kernel.lanczos3
-    //         })
-    //         .toBuffer((err, buffer) => {
-    //             if (err) return callback(err);
-
-    //             callback(null, buffer)
-    //         });
-    // };
-
     this.ComposeTextOnImage = function(image, text, compositeConfig, callback) {
 
 
