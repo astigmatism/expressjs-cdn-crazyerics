@@ -22,7 +22,7 @@ module.exports = new (function() {
      * @param {Number | null | undefined} height 
      * @param {*} callback 
      */
-    this.ResizeImage = function(processedPath, image, width, height, callback, opt_noSaveOnResize) {
+    this.ResizeImage = function(processedPath, image, width, height, callback, opt_skipSave) {
 
         //bail when both are not defined and there's no compositing
         if (!width && !height) {
@@ -36,7 +36,7 @@ module.exports = new (function() {
                 //if you're thinking to attempt Jimp on Sharp's failure, I tried this and Jimp always failed too
             }
 
-            if (opt_noSaveOnResize) {
+            if (opt_skipSave) {
                 return callback(null, output);
             }
 

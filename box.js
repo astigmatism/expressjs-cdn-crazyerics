@@ -12,7 +12,7 @@ module.exports = new (function() {
 
     var _self = this;
 
-	this.GetFront = function(gk, width, height, callback) {
+	this.GetFront = function(gk, width, height, callback, opt_skipSave) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
@@ -54,7 +54,8 @@ module.exports = new (function() {
                             Main.ResizeImage(processedPath, buffer, width, height, function(err, output) {
                                 if (err) return callback(500, err);
                                 callback(status, null, output);
-                            });
+                            
+                            }, opt_skipSave);
                         }
                         
 
@@ -63,6 +64,7 @@ module.exports = new (function() {
                             _self.CompositeTextOnBoxTemplate(gameKey.system, gameKey.title, (err, buffer) => {
                                 if (err) return callback(500, err);
                                 _finally(203, buffer); //if composited text on a box template, use 203 (external source)
+                            
                             });
                         }
                         else {

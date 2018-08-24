@@ -30,6 +30,7 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
+    var skipSave = req.query.skipsave; 
 
     //gk required
     if (!gk) {
@@ -62,7 +63,8 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
             return res.status(status).json(err);
         }
         res.status(status).end(imageBuffer, 'buffer');
-    });
+    
+    }, skipSave);
 });
 
 router.get('/audit/front/:system', (req, res) => {
