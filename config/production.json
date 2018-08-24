@@ -1,0 +1,5 @@
+{
+    "cors": {
+        "whitelist": ["http://crazyerics.com", "http://www.crazyerics.com"]
+    }
+}

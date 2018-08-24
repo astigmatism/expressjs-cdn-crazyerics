@@ -5,7 +5,7 @@
     "screentypes": ["title", "screen"],
     "videotypes": ["sq"],
     "cors": {
-        "whitelist": ["http://crazyerics.com", "http://www.crazyerics.com", "http://localhost:3000"]
+        "whitelist": ["http://localhost:3000"]
     },
     "compositing": {
         "32x": {
