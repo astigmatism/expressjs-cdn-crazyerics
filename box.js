@@ -69,42 +69,20 @@ module.exports = new (function() {
     };
 
     //just get the raw image src from the cdn location of choice. I use this for the media browser
-    this.GetFrontSrc = function(gk, location, callback) {
+    this.GetSrc = function(gk, type, location, callback) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
-        var mediaPathsToSearch = [];
-        var filePath; 
 
         if (!gameKey) {
             return callback(400, 'err 1');
         }
 
-        //all this for media since it can live in many folders
-        Main.GetSortedDirectories(path.join(mediaFrontRoot, gameKey.system), (err, listing) => {
-            if (err) return callback(500, 'err 2');
-            
-            var i = 0, len = listing.length;
-            for (i; i < len;++i) {
-                mediaPathsToSearch.push(path.join(mediaFrontRoot, gameKey.system, listing[i], gameKey.title, '0.jpg'));
-            }
+        var filePath = path.join(__dirname, '/', location, 'box', type, gameKey.system, gameKey.title, '0.jpg');
 
-            //still all for media, even if not need3ed :P 
-            Main.OpenFileAlternates(mediaPathsToSearch, function(err, data, successIndex) {
-
-                if (location == 'media') {
-
-                    return callback(200, null, data);
-                }
-                else {
-                    filePath = path.join(__dirname, '/', location, 'box', 'front', gameKey.system, gameKey.title, '0.jpg');
-
-                    fs.readFile(filePath, (err, buffer) => {
-                        if (err) return callback(404, 'not found')
-                        return callback(200, null, buffer);
-                    });
-                }
-            });
+        fs.readFile(filePath, (err, buffer) => {
+            if (err) return callback(404, 'not found')
+            return callback(200, null, buffer);
         });
     };
 

@@ -76,8 +76,11 @@ router.get('/front/:gk', function(req, res) {
     if (!gk) {
         return res.status(400).end('err 0'); //400 Bad Request
     }
+    if (!location) {
+        return res.status(400).end('err 1'); //400 Bad Request
+    }
 
-    Box.GetFrontSrc(gk, location, (status, err, imageBuffer) => {
+    Box.GetFrontSrc(gk, 'front', location, (status, err, imageBuffer) => {
         if (err) {
             return res.status(status).json(err);
         }
