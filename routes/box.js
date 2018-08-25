@@ -67,7 +67,7 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
     }, skipSave);
 });
 
-router.get('/front/:gk', function(req, res) {
+router.get('/front/:gk', cors(), function(req, res) {
 
     var gk = req.params.gk;
     var location = req.query.location;
