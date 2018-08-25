@@ -80,7 +80,7 @@ router.get('/front/:gk', cors(), function(req, res) {
         return res.status(400).end('err 1'); //400 Bad Request
     }
 
-    Box.GetFrontSrc(gk, 'front', location, (status, err, imageBuffer) => {
+    Box.GetSrc(gk, 'front', location, (status, err, imageBuffer) => {
         if (err) {
             return res.status(status).json(err);
         }
