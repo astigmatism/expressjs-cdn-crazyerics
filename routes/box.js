@@ -30,7 +30,8 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
 
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
-    var skipSave = req.query.skipsave; 
+    var skipSave = req.query.skipsave;
+    var getOriginal = false;
 
     //gk required
     if (!gk) {
@@ -56,6 +57,12 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
             width = 256; //texture for 3d game loading??
             height = 256;
             break;
+        case 'z':
+            //no resize, original file
+            getOriginal = true;
+            break;
+        default:
+            return res.status(400).end('err 1');
     }
 
     Box.GetFront(gk, width, height, (status, err, imageBuffer) => {
@@ -64,28 +71,7 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
         }
         res.status(status).end(imageBuffer, 'buffer');
     
-    }, skipSave);
-});
-
-router.get('/front/:gk', cors(), function(req, res) {
-
-    var gk = req.params.gk;
-    var location = req.query.location;
-
-    //gk required
-    if (!gk) {
-        return res.status(400).end('err 0'); //400 Bad Request
-    }
-    if (!location) {
-        return res.status(400).end('err 1'); //400 Bad Request
-    }
-
-    Box.GetSrc(gk, 'front', location, (status, err, imageBuffer) => {
-        if (err) {
-            return res.status(status).json(err);
-        }
-        res.status(status).end(imageBuffer, 'buffer');
-    });
+    }, skipSave, getOriginal);
 });
 
 router.get('/audit/front/:system', (req, res) => {

@@ -13,7 +13,7 @@ module.exports = new (function() {
 
     var _self = this;
 
-	this.GetFront = function(gk, width, height, callback, opt_skipSave) {
+	this.GetFront = function(gk, width, height, callback, opt_skipSave, opt_mediaFile) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
@@ -29,6 +29,15 @@ module.exports = new (function() {
         var processedPath = path.join(processedRoot, gameKey.system, gameKey.title, widthAndHeight);
         var processedFilePath = path.join(processedPath, '0.jpg');
         var mediaFilePath = path.join(mediaFrontRoot, gameKey.system, gameKey.title, '0.jpg');
+
+        //stop! special case to return the media source image right away
+        if (opt_mediaFile) {
+            fs.readFile(mediaFilePath, (err, buffer) => {
+                if (err) return callback(404, 'not found')
+                return callback(200, null, buffer);
+            });
+            return;
+        }
 
         //to save the most time, first look directly for a pre-processed image
         fs.readFile(processedFilePath, (err, processedImageBuffer) => {
