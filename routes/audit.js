@@ -77,7 +77,7 @@ router.get('/:gk', cors(), (req, res) => {
 
     //sq video
     var sqvideopath = path.join(mediaRoot, 'video', 'sq', gameKey.system, gameKey.title);
-    if (fs.existsSync(path.join(sqvideopath))) {
+    if (fs.existsSync(sqvideopath)) {
         var data = fs.readJsonSync(path.join(sqvideopath, 'info.json'), { throws: false }); //returns null if invalid json
         
         response.sqvideo = data;
