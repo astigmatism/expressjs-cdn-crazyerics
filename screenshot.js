@@ -3,7 +3,7 @@ var Main = require('./main.js');
 const path = require('path');
 
 const processedRoot = path.join(__dirname, '/','processed');
-const mediaRoot = path.join(__dirname, '/','media');
+const mediaRoot = path.join(__dirname, '/','media', 'screen');
 const contributionsRoot = path.join(__dirname, '/','contributions');
 
 module.exports = new (function() {
