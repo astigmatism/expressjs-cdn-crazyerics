@@ -21,6 +21,22 @@
 var express = require('express');
 var router = express.Router();
 
+router.get('/media/audit/:gk', (req, res, next) => {
 
+    var gk = req.params.gk;
+
+    //gk required
+    if (!gk) {
+        return res.status(400).end('err 0'); //400 Bad Request
+    }
+
+    //first, we must have meaningful data out of the gk
+    var gameKey = Main.Decompress.gamekey(gk);
+
+    if (!gameKey) {
+        return callback(400, 'err 1');
+    }
+
+});
 
 module.exports = router;

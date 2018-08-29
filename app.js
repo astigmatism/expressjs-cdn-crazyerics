@@ -11,6 +11,7 @@ var screenshotRoutes = require('./routes/screenshot');
 var boxRoutes = require('./routes/box');
 var gameRoutes = require('./routes/game');
 var videoRoutes = require('./routes/video');
+var auditRoutes = require('./routes/audit');
 
 var app = express();
 
@@ -43,6 +44,7 @@ app.use('/screenshot', screenshotRoutes);
 app.use('/box', boxRoutes);
 app.use('/game', gameRoutes);
 app.use('/video', videoRoutes);
+app.use('/audit', auditRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

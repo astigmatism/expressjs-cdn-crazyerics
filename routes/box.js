@@ -74,19 +74,4 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
     }, skipSave, getOriginal);
 });
 
-router.get('/audit/front/:system', (req, res) => {
-
-    var system = req.params.system;
-
-    if (!system) {
-        return res.status(400).end('err 0'); //400 Bad Request
-    }
-
-    Box.Audit('front', system, (status, err, auditResult) => {
-        if (err) return res.status(status).json(err);
-
-        return res.status(200).json(auditResult);
-    });
-});
-
 module.exports = router;
