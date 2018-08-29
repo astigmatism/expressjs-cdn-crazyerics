@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 
 var routes = require('./routes/index');
-var screenshotRoutes = require('./routes/screenshot');
+var screenRoutes = require('./routes/screen');
 var boxRoutes = require('./routes/box');
 var gameRoutes = require('./routes/game');
 var videoRoutes = require('./routes/video');
@@ -40,7 +40,7 @@ app.use(express.static('public', {
 }));
 
 app.use('/', routes);
-app.use('/screenshot', screenshotRoutes);
+app.use('/screen', screenRoutes);
 app.use('/box', boxRoutes);
 app.use('/game', gameRoutes);
 app.use('/video', videoRoutes);

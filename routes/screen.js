@@ -19,7 +19,7 @@
  */
 
 const express = require('express');
-const Screenshot = require('../screenshot');
+const Screen = require('../screen');
 const cors = require('cors');
 const corsConfig = require('../corsConfig');
 const Main = require('../main');
@@ -53,7 +53,7 @@ router.post('/:screentype/contribute', cors(), (req, res, next) => {
         return res.status(400).json('err 1');
     }
 
-    Screenshot.Set(screenType, formdata, (status, err, response) => {
+    Screen.Set(screenType, formdata, (status, err, response) => {
         if (err) return res.status(status).json(err);
         
         Main.SyncContributions(err => {
@@ -99,7 +99,7 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
             return res.status(400).end('err 1');
     }
 
-    Screenshot.Get(screenType, gk, width, height, (status, err, base64ImageData) => {
+    Screen.Get(screenType, gk, width, height, (status, err, base64ImageData) => {
         if (err) return res.status(status).json(err);
 
         res.status(status).send(base64ImageData);

@@ -2,7 +2,7 @@ var fs = require('fs-extra');
 var Main = require('./main.js');
 const path = require('path');
 
-const processedRoot = path.join(__dirname, '/','processed');
+const processedRoot = path.join(__dirname, '/','processed', 'screen');
 const mediaRoot = path.join(__dirname, '/','media', 'screen');
 const contributionsRoot = path.join(__dirname, '/','contributions');
 
