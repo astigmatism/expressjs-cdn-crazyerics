@@ -70,7 +70,7 @@ router.get('/:gk', cors(), (req, res) => {
     }
 
     //titlescreen
-    var titlescreenfolder = path.join(mediaRoot, 'screenshot', 'title', gameKey.system, gameKey.title);
+    var titlescreenfolder = path.join(mediaRoot, 'screen', 'title', gameKey.system, gameKey.title, gameKey.file);
     if (fs.existsSync(titlescreenfolder)) {
         response.titlescreen = true;
     }
