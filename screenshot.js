@@ -10,7 +10,7 @@ module.exports = new (function() {
 
     var _self = this;
 
-	this.Get = function(screenType, gk, width, height, callback) {
+	this.Get = function(screenType, gk, width, height, callback, opt_mediaFile) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
@@ -30,6 +30,17 @@ module.exports = new (function() {
         var contributionFilePath = path.join(contributionsRoot, screenType, gameKey.system, gameKey.title, gameKey.file, '0.jpg');
 
         var pathsToSearch = [processedFilePath, mediaFilePath, contributionFilePath];
+
+        //stop! special case to return the media source image right away
+        if (opt_mediaFile) {
+            fs.readFile(mediaFilePath, (err, buffer) => {
+                if (err) return callback(404, 'not found')
+
+                var base64String = new Buffer(buffer).toString('base64'); //convert data to base64
+                return callback(200, null, base64String);
+            });
+            return;
+        }
 
         Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
             if (err) {

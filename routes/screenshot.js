@@ -69,6 +69,7 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
     var screenType = req.params.screentype; //title, screen
+    var getOriginal = false;
 
     //gk required
     if (!gk) {
@@ -90,13 +91,19 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
         case 'c':
             width = 240; //halfway between 320 and 160 :)
             break;
+        case 'z':
+            //no resize, original file
+            getOriginal = true;
+            break;
+        default:
+            return res.status(400).end('err 1');
     }
 
     Screenshot.Get(screenType, gk, width, height, (status, err, base64ImageData) => {
         if (err) return res.status(status).json(err);
 
         res.status(status).send(base64ImageData);
-    });
+    }, getOriginal);
 });
 
 module.exports = router;
