@@ -96,7 +96,7 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
             getOriginal = true;
             break;
         default:
-            return res.status(400).end('err 1');
+            return res.status(400).end('err 2');
     }
 
     Screen.Get(screenType, gk, width, height, (status, err, base64ImageData) => {

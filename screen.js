@@ -17,7 +17,7 @@ module.exports = new (function() {
 
         if (!gameKey) {
             //console.log('unable to parse gameKey from --> ' + gk);
-            return callback(400, 'err 1');
+            return callback(400, 'err 1.0');
         }
 
         //create a string for a unique filename (since these can be undef or null).
@@ -44,7 +44,7 @@ module.exports = new (function() {
 
         Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
             if (err) {
-                return callback(404, 'err 2'); //no files found, 404
+                return callback(404, 'err 1.1'); //no files found, 404
             }
 
             //create processed image by resizing on the fly
@@ -83,14 +83,14 @@ module.exports = new (function() {
             //remove existing processed folder (all w and h mods inside)
             //so that new can be generated from this contribution
             fs.emptyDir(path.join(processedRoot, screenType, gameKey.system, gameKey.title, gameKey.file), (err) => {
-                if (err) return callback(500, 'err 0');
+                if (err) return callback(500, 'err 1.2');
 
                 //write file
                 fs.ensureDir(screenContributionPath, err => {
-                    if (err) return callback(500, 'err 1');
+                    if (err) return callback(500, 'err 1.3');
 
                     fs.writeFile(path.join(screenContributionPath, filename), contents, 'base64', (err) => {
-                        if (err) return callback(500, 'err 2');
+                        if (err) return callback(500, 'err 1.5');
 
                         return callback(null, null, contents);
                     });
@@ -98,7 +98,7 @@ module.exports = new (function() {
             });
         }
         else {
-            return callback(400, 'err 3');
+            return callback(400, 'err 1.4');
         }
     };
 });
