@@ -33,7 +33,6 @@ module.exports = new (function() {
 
         //stop! special case to return the media source image right away
         if (opt_mediaFile) {
-            console.log(mediaFilePath);
             fs.readFile(mediaFilePath, (err, buffer) => {
                 if (err) return callback(404, 'not found')
 
