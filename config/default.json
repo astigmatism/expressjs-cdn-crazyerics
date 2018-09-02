@@ -45,10 +45,10 @@
         },
         "gbc": {
             "font": "Poppins-Italic-48-Mercury.fnt",
-            "x": 110,
+            "x": 130,
             "y": 0,
             "width": 361,
-            "height": 470
+            "height": 444
         },
         "gen": {
             "font": "Poppins-Italic-48-Mercury.fnt",
