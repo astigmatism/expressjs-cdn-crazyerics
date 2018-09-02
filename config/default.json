@@ -43,6 +43,13 @@
             "width": 361,
             "height": 470
         },
+        "gbc": {
+            "font": "Poppins-Italic-48-Mercury.fnt",
+            "x": 110,
+            "y": 0,
+            "width": 361,
+            "height": 470
+        },
         "gen": {
             "font": "Poppins-Italic-48-Mercury.fnt",
             "x": 98,
