@@ -4,4 +4,4 @@
 # use cron for start up: "crontab -e" and add "@reboot /path/to/script"
 
 cd /home/astigmatism/expressjs-cdn-crazyerics/
-pm2 start app.js --name cdn -i -1
+pm2 start app.js --name crazyerics-cdn -i -1
