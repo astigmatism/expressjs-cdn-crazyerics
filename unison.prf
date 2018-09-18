@@ -7,4 +7,4 @@ confirmbigdel = false
 prefer = newer
 silent = false
 times = true
-logfile = /root/.unison/.unison.log
+logfile = /home/astigmatism/.unison/.unison.log

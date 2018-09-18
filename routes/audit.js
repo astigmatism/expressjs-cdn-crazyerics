@@ -27,6 +27,7 @@ var fs = require('fs-extra');
 var path = require('path');
 
 const mediaRoot = path.join(__dirname, '../','media');
+const contributionsRoot = path.join(__dirname, '../','contributions');
 
 //returns a manifest of all titles with boxart
 router.get('/box/front/:system', (req, res) => {
@@ -81,6 +82,12 @@ router.get('/:gk', cors(), (req, res) => {
         var data = fs.readJsonSync(path.join(sqvideopath, 'info.json'), { throws: false }); //returns null if invalid json
         
         response.sqvideo = data;
+    }
+
+    //contributions title
+    titlescreenfolder = path.join(contributionsRoot, 'screen', 'title', gameKey.system, gameKey.title, gameKey.file);
+    if (fs.existsSync(titlescreenfolder)) {
+        response.contributionstitlescreen = true;
     }
 
     res.status(200).json(response);
