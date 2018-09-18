@@ -1,6 +1,11 @@
 {
     "unison": {
-        "profile": "cdn1"
+        "profile": "cdn-sync.prf",
+        "root": "/home/astigmatism/expressjs-cdn-crazyerics/contributions",
+        "destinations": [
+            "ssh://astigmatism@192.168.1.11//home/astigmatism/expressjs-cdn-crazyerics/contributions",
+            "ssh://astigmatism@192.168.1.12//home/astigmatism/expressjs-cdn-crazyerics/contributions"
+        ]
     },
     "screentypes": ["title", "screen"],
     "videotypes": ["sq"],

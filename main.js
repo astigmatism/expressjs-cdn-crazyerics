@@ -191,12 +191,22 @@ module.exports = new (function() {
 
     this.SyncContributions = function(callback) {
 
-        process.exec('unison ' + config.unison.profile, (err, stdout, stderr) => {
-            if (err) return callback(err);
+        //for each cdn
+        async.eachSeries(config.unison.destinations, (cdn, nextcdn) => {
 
-            console.log(stdout);
-            callback();
-        });
+           //run unison
+            process.exec('unison ' + config.unison.profile + ' ' + config.unison.root + ' ' + config.unison.cdn, (err, stdout, stderr) => {
+                if (err) return nextcdn(err);
+
+                console.log(stdout);
+                return nextcdn();
+            });
+
+        }, (err) => {
+            if (err) return callback(err);
+    
+            return callback();
+        });        
     };
 
     this.OpenFileAlternates = function(paths, callback, _currentIndex) {
