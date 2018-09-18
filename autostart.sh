@@ -3,5 +3,5 @@
 # for some reason, pm2 works when in the working directory, otherwise it sucks
 # use cron for start up: "crontab -e" and add "@reboot /path/to/script"
 
-cd /media/data/expressjs-cdn-crazyerics/
-pm2 start app.js --name cdn -i -1
+cd /home/astigmatism/expressjs-cdn-crazyerics/
+pm2 start app.js --name crazyerics-cdn -i -1
