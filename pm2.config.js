@@ -3,7 +3,6 @@ module.exports = {
         {
             name: "crazyerics-cdn",
             script: "/home/astigmatism/expressjs-cdn-crazyerics/app.js",
-            watch: true,
             env: {
                 "NODE_ENV": "production"
             },
