@@ -195,7 +195,7 @@ module.exports = new (function() {
         async.eachSeries(config.unison.destinations, (cdn, nextcdn) => {
 
            //run unison
-            process.exec('unison ' + config.unison.profile + ' ' + config.unison.root + ' ' + config.unison.cdn, (err, stdout, stderr) => {
+            process.exec('unison ' + config.unison.profile + ' ' + config.unison.root + ' ' + cdn, (err, stdout, stderr) => {
                 if (err) return nextcdn(err);
 
                 console.log(stdout);
