@@ -7,4 +7,4 @@
 
 
 # "crontab -e" content:
-@reboot /media/data/expressjs-cdn-crazyerics/autostart.sh # be sure this file is executable
+@reboot cd /home/astigmatism/expressjs-crazyerics && pm2 start pm2.config.js
