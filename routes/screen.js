@@ -69,7 +69,9 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
     var modifier = req.params.cdnSizeModifier;
     var gk = req.params.gk;
     var screenType = req.params.screentype; //title, screen
-    var getOriginal = false;
+    var source = req.query.source; //contributions, media < to force loading from that location (used for mediabrowser)
+
+    var customOperation = null;
 
     //gk required
     if (!gk) {
@@ -91,9 +93,13 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
         case 'c':
             width = 240; //halfway between 320 and 160 :)
             break;
+        case 'y':
+            //no resize, get original contributions file
+            customOperation = 'contributions';
+            break;
         case 'z':
-            //no resize, original file
-            getOriginal = true;
+            //no resize, get original media file
+            customOperation = 'media';
             break;
         default:
             return res.status(400).end('err 2');
@@ -103,7 +109,7 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
         if (err) return res.status(status).json(err);
 
         res.status(status).send(base64ImageData);
-    }, getOriginal);
+    }, customOperation);
 });
 
 module.exports = router;

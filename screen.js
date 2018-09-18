@@ -10,7 +10,7 @@ module.exports = new (function() {
 
     var _self = this;
 
-	this.Get = function(screenType, gk, width, height, callback, opt_mediaFile) {
+	this.Get = function(screenType, gk, width, height, callback, opt_customOperation) {
 
         //first, we must have meaningful data out of the gk
         var gameKey = Main.Decompress.gamekey(gk);
@@ -31,15 +31,22 @@ module.exports = new (function() {
 
         var pathsToSearch = [processedFilePath, mediaFilePath, contributionFilePath];
 
-        //stop! special case to return the media source image right away
-        if (opt_mediaFile) {
-            fs.readFile(mediaFilePath, (err, buffer) => {
-                if (err) return callback(404, 'not found')
+        //stop! special cases
+        if (opt_customOperation) {
 
-                var base64String = new Buffer(buffer).toString('base64'); //convert data to base64
-                return callback(200, null, base64String);
-            });
-            return;
+            var loadOriginalPath = (opt_customOperation === 'media') ? mediaFilePath : null;
+            loadOriginalPath = (opt_customOperation === 'contributions') ? contributionFilePath : null;
+
+            if (loadOriginalPath)
+            {
+                fs.readFile(loadOriginalPath, (err, buffer) => {
+                    if (err) return callback(404, 'not found')
+    
+                    var base64String = new Buffer(buffer).toString('base64'); //convert data to base64
+                    return callback(200, null, base64String);
+                });
+            }
+            return; //bail
         }
 
         Main.OpenFileAlternates(pathsToSearch, function(err, data, successIndex) {
