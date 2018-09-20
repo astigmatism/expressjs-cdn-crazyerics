@@ -34,9 +34,7 @@ router.get('/lb/:gk', cors(), (req, res, next) => {
     }
 
     Metadata.GetLaunchbox(gk, (status, err, data) => {
-        if (err) {
-            return res.status(status).json(err);
-        }
+        if (err) return res.status(status).json(err);
         res.status(status).json(data);
     });
 });

@@ -23,7 +23,7 @@ module.exports = new (function() {
         var mediaFilePath = path.join(mediaLaunchboxRoot, gameKey.system, gameKey.title, '0.json');
 
         fs.readJson(mediaFilePath, (err, data) => {
-            if (err) return callback(500, err);
+            if (err) return callback(404, err);
             return callback(200, data);
         });
     };
