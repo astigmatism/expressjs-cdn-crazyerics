@@ -20,6 +20,7 @@
 var express = require('express');
 var router = express.Router();
 var cors = require('cors');
+var Metadata = require('../metadata');
 
 // I want to prevent any client from simply asking for any size image since that image is saved
 //back to the cdn. let's instead white list allowable resizes
