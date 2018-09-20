@@ -85,9 +85,15 @@ router.get('/:gk', cors(), (req, res) => {
     }
 
     //contributions title
-    titlescreenfolder = path.join(contributionsRoot, 'screen', 'title', gameKey.system, gameKey.title, gameKey.file);
+    var titlescreenfolder = path.join(contributionsRoot, 'screen', 'title', gameKey.system, gameKey.title, gameKey.file);
     if (fs.existsSync(titlescreenfolder)) {
         response.contributionstitlescreen = true;
+    }
+
+    //launchbox metadata
+    var launchboxmetadatafolder = path.join(mediaRoot, 'metadata', 'launchbox', gameKey.system, gameKey.title);
+    if (fs.existsSync(launchboxmetadatafolder)) {
+        response.launchboxmetadata = true;
     }
 
     res.status(200).json(response);
