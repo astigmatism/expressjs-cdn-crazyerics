@@ -34,18 +34,18 @@ module.exports = new (function() {
         //stop! special cases
         if (opt_customOperation) {
 
-            var loadOriginalPath = (opt_customOperation === 'media') ? mediaFilePath : null;
-            loadOriginalPath = (opt_customOperation === 'contributions') ? contributionFilePath : null;
-
-            if (loadOriginalPath)
-            {
-                fs.readFile(loadOriginalPath, (err, buffer) => {
-                    if (err) return callback(404, 'not found')
-    
-                    var base64String = new Buffer(buffer).toString('base64'); //convert data to base64
-                    return callback(200, null, base64String);
-                });
+            var assetLoadPath = mediaFilePath; //default, load from media folder
+            
+            if (opt_customOperation === 'contributions') {
+                assetLoadPath = contributionFilePath;
             }
+
+            fs.readFile(assetLoadPath, (err, buffer) => {
+                if (err) return callback(404, 'not found')
+
+                var base64String = new Buffer(buffer).toString('base64'); //convert data to base64
+                return callback(200, null, base64String);
+            });
             return; //bail
         }
 
