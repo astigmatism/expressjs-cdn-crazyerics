@@ -24,7 +24,31 @@ module.exports = new (function() {
 
         fs.readJson(mediaFilePath, (err, data) => {
             if (err) return callback(404, err);
-            return callback(200, data);
+            return callback(200, null, data);
+        });
+    };
+
+    this.Audit = function(type, system, callback) {
+
+        var mediaPath = path.join(mediaRoot, type, system); //boxtype: front, back, etc
+        var audit = {};
+
+        fs.readdir(mediaPath, (err, titles) => {
+            if (err) return callback(400, 'err1.0');
+
+            async.eachSeries(titles, (title, nexttitle) => {
+
+                fs.readJson(path.join(mediaPath, title, '0.json'), (err, data) => {
+                    if (err) return nexttitle(err);
+
+                    audit[title] = data;
+                    nexttitle();
+                });
+
+            }, err => {
+                if (err) return callback(400, 'err1.1');
+                callback(200, null, audit);
+            });
         });
     };
 });

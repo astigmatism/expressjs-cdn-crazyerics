@@ -20,6 +20,7 @@
 var express = require('express');
 var Main = require('../main');
 var Box = require('../box');
+var Metadata = require('../metadata');
 var router = express.Router();
 var cors = require('cors');
 var corsConfig = require('../corsConfig');
@@ -39,6 +40,22 @@ router.get('/box/front/:system', (req, res) => {
     }
 
     Box.Audit('front', system, (status, err, auditResult) => {
+        if (err) return res.status(status).json(err);
+
+        return res.status(200).json(auditResult);
+    });
+});
+
+//returns a manifest of all titles with metadata
+router.get('/metadata/launchbox/:system', (req, res) => {
+
+    var system = req.params.system;
+
+    if (!system) {
+        return res.status(400).end('err 0'); //400 Bad Request
+    }
+    
+    Metadata.Audit('launchbox', system, (status, err, auditResult) => {
         if (err) return res.status(status).json(err);
 
         return res.status(200).json(auditResult);
