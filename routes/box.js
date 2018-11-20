@@ -51,10 +51,10 @@ router.get('/front/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
             width = 170; //game details (below emulator)
             break;
         case 'd':
-            width = 200; //game loading??
+            height = 200; //game loading
             break;
         case 'e':
-            width = 256; //texture for 3d game loading??
+            width = 256; //texture for 3d game loading?? not used atm
             height = 256;
             break;
         case 'z':
