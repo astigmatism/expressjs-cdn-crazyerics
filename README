@@ -30,3 +30,44 @@ then nano in and paste the contents of the file here called "unison.prf"
 Note - I started with the goal to not have code trigger this and instead use a file watch process
 I had trouble getting unison's fsmonitor to work and in the end decided I'd rather not have the
 overhead of the watch anyway, triggering on demand is better for something unfrequently run :)
+
+Setting up this application
+---------------------------
+
+Okay, so at this time (Sept 27, 2019) I have the CDN application running in a VM on an ESXi instance usng the Synology as a datastore through the iSCSI interface.
+I used Ubuntu Server 16.04 (I original deplyed on this version despite it being a little older) and ensured that SSH Server was installed with the OS.
+
+sudo nano /etc/network/interfaces
+
+*change from dhcp to static
+address 192.168.1.x
+netmask 255.255.255.0
+gatewat 192.168.1.1
+dns-nameservers 192.168.1.1
+*save and quit, restart server
+
+sudo apt-get upgrade
+sudo apt-get update
+sudo apt-get install curl
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install nodejs
+* this installs nodejs v10 and npm
+sudo npm install pm2 -g
+sudo apt-get install git
+git clone https://github.com/astigmatism/expressjs-cdn-crazyerics.git
+*you'll likely need your github account cred for this
+*clones into ./expressjs-cdn-crazyerics
+cd ./expressjs-cdn-crazyerics
+npm install
+*everything should be ready except for the content which I do not submit to github, for that you'll have to copy it over from another cdn with scp
+*on source computer, navigate to expressjs-cdn-crazyerics directory
+scp -r ./media astigmatism@192.168.1.x:/home/astigmatism/expressjs-cdn-crazyerics/media
+scp -r ./content astigmatism@192.168.1.x:/home/astigmatism/expressjs-cdn-crazyerics/content
+scp -r ./public astigmatism@192.168.1.x:/home/astigmatism/expressjs-cdn-crazyerics/public
+scp -r ./contributions astigmatism@192.168.1.x:/home/astigmatism/expressjs-cdn-crazyerics/contributions
+scp -r ./processed astigmatism@192.168.1.x:/home/astigmatism/expressjs-cdn-crazyerics/processed
+*the last one is optional. You can see your cdn at work generating new processed (resized) content if you want
+*note the fully qualified path for the destination. you might need to change the /home/astigmatism/ to where ever the project lives
+pm2 start pm2.config.js
+
+Note this was all from memory (although I performed all these tasks) so modify the above list is something isn't right. I might rely on it for a long time :)
