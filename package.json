@@ -10,7 +10,7 @@
     "atob": "^2.1.1",
     "body-parser": "~1.17.1",
     "btoa": "^1.2.1",
-    "config": "^2.0.1",
+    "config": "^3.3.8",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
     "debug": "~2.6.3",
