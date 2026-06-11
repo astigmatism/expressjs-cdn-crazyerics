@@ -93,6 +93,9 @@ router.get('/:screentype/:cdnSizeModifier/:gk', cors(), (req, res, next) => {
         case 'c':
             width = 240; //halfway between 320 and 160 :)
             break;
+        case 'd':
+            width = 300; //shader selection title-screen previews; cached as processed/screen/.../w300
+            break;
         case 'y':
             //no resize, get original contributions file
             customOperation = 'contributions';
